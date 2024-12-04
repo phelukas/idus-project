@@ -19,7 +19,7 @@ SECRET_KEY = config("SECRET_KEY", default="django-insecure-f55x+z^!6gcz52*w7%o7n
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config("DEBUG", default=False, cast=bool)
 
-ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="localhost").split(",")
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 
 # Application definition
@@ -79,7 +79,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": config("DATABASE_NAME", default="idusdb"),
         "USER": config("DATABASE_USER", default="idususer"),
-        "PASSWORD": config("DATABASE_PASSWORD", default="default"),
+        "PASSWORD": config("DATABASE_PASSWORD", default="iduspass"),
         "HOST": config("DATABASE_HOST", default="localhost"),
         "PORT": config("DATABASE_PORT", default="5432"),
     }
