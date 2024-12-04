@@ -84,3 +84,37 @@ export const registerPointManual = (userId, timestamp) =>
 
 export const getWorkPointReport = (userId, date) =>
   apiRequest(`/workpoints/report/${userId}/?date=${date}`, "GET");
+
+export const downloadWorkPointPDF = async (userId, date) => {
+  const token = getAccessToken();
+
+  const headers = {
+    Authorization: `Bearer ${token}`,
+  };
+
+  try {
+    const response = await fetch(
+      `${BASE_URL}/workpoints/report/${userId}/pdf/?date=${date}`,
+      {
+        method: "GET",
+        headers,
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.detail || "Erro ao gerar o relatório em PDF.");
+    }
+
+    const blob = await response.blob(); // Obtém o arquivo PDF como blob
+    const url = window.URL.createObjectURL(blob); // Cria uma URL temporária para o arquivo
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `relatorio_${userId}_${date}.pdf`; // Nome do arquivo
+    link.click(); // Inicia o download
+    window.URL.revokeObjectURL(url); // Revoga a URL temporária após o uso
+  } catch (error) {
+    console.error("Erro ao baixar PDF:", error.message);
+    throw error;
+  }
+};
