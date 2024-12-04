@@ -2,7 +2,7 @@ from datetime import timedelta
 from pathlib import Path
 from decouple import config
 
-CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", default="http://localhost:3000,http://127.0.0.1:8000").split(",")
+CORS_ALLOWED_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:8000']
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -19,7 +19,6 @@ SECRET_KEY = config("SECRET_KEY", default="django-insecure-f55x+z^!6gcz52*w7%o7n
 DEBUG = config("DEBUG", default=False, cast=bool)
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
-
 
 # Application definition
 
