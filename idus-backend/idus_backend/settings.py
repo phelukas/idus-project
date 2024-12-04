@@ -1,9 +1,8 @@
 from datetime import timedelta
 from pathlib import Path
 from decouple import config
-from ast import literal_eval  # Adicione essa importação no topo do arquivo
 
-CORS_ALLOWED_ORIGINS = literal_eval(config("CORS_ALLOWED_ORIGINS", default='["http://localhost", "http://127.0.0.1"]'))
+CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", default="http://localhost:3000,http://127.0.0.1:8000").split(",")
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
