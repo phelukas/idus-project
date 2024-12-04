@@ -3,8 +3,6 @@ from pathlib import Path
 from decouple import config
 
 
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -13,16 +11,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config("SECRET_KEY", default="django-insecure-f55x+z^!6gcz52*w7%o7n5vt58ghciv#9@2epuk=)ug*##rcac")
+SECRET_KEY = config(
+    "SECRET_KEY",
+    default="django-insecure-f55x+z^!6gcz52*w7%o7n5vt58ghciv#9@2epuk=)ug*##rcac",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config("DEBUG", default=False, cast=bool)
 
-ALLOWED_HOSTS = ['www.phelukas.com.br', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 
-SECURE_SSL_REDIRECT = True
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = False
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
 
 
 # Application definition
@@ -39,7 +40,7 @@ INSTALLED_APPS = [
     "users",
     "workpoints",
     "corsheaders",
-    "drf_spectacular"
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
@@ -146,7 +147,6 @@ SIMPLE_JWT = {
         minutes=config("ACCESS_TOKEN_LIFETIME", default=60, cast=int)
     ),
 }
-
 
 
 AUTHENTICATION_BACKENDS = [
