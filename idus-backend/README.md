@@ -93,9 +93,9 @@ Antes de começar, você precisará ter as seguintes ferramentas instaladas:
 
 3. **Criação de Superusuário Padrão:**
 
-   - Ao executar `python manage.py migrate`, um superusuário com CPF `00000000000` é criado automaticamente, com o seguinte login:
+   - Ao executar `python manage.py migrate`, um superusuário com CPF `39416362000` é criado automaticamente, com o seguinte login:
      ```plaintext
-     CPF: 00000000000
+     CPF: 39416362000
      Senha: admin123
      ```
 
@@ -111,7 +111,7 @@ Antes de começar, você precisará ter as seguintes ferramentas instaladas:
 - **Corpo da Requisição (JSON):**
   ```json
   {
-    "cpf": "00000000000",
+    "cpf": "39416362000",
     "password": "admin123"
   }
   ```
