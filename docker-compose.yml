@@ -16,6 +16,14 @@ services:
     build:
       context: ./idus-backend
     container_name: idus-backend
+    environment:
+      DATABASE_NAME: idusdb
+      DATABASE_USER: idususer
+      DATABASE_PASSWORD: iduspass
+      DATABASE_HOST: idus-db
+      DATABASE_PORT: 5432
+      ALLOWED_HOSTS: localhost,127.0.0.1,www.phelukas.com.br
+      CORS_ALLOWED_ORIGINS: http://localhost:3000,http://127.0.0.1:8000,https://www.phelukas.com.br,http://www.phelukas.com.br
     ports:
       - "8000:8000"
     depends_on:
@@ -42,7 +50,7 @@ services:
   #     - /etc/letsencrypt/live/www.phelukas.com.br:/etc/letsencrypt/live/www.phelukas.com.br:ro
   #     - /etc/letsencrypt/archive:/etc/letsencrypt/archive:ro
   #     - /etc/letsencrypt/keys:/etc/letsencrypt/keys:ro
-  #     - ./nginx:/etc/nginx/conf.d 
+  #     - ./nginx:/etc/nginx/conf.d # Monte a configuração do Nginx
   #   ports:
   #     - "80:80"
   #     - "443:443"
