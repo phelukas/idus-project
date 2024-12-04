@@ -43,23 +43,6 @@ services:
     networks:
       - idus-network
 
-  # nginx:
-  #   image: nginx:latest
-  #   container_name: idus-nginx
-  #   volumes:
-  #     - /etc/letsencrypt/live/www.phelukas.com.br:/etc/letsencrypt/live/www.phelukas.com.br:ro
-  #     - /etc/letsencrypt/archive:/etc/letsencrypt/archive:ro
-  #     - /etc/letsencrypt/keys:/etc/letsencrypt/keys:ro
-  #     - ./nginx:/etc/nginx/conf.d # Monte a configuração do Nginx
-  #   ports:
-  #     - "80:80"
-  #     - "443:443"
-  #   depends_on:
-  #     - frontend
-  #     - backend
-  #   networks:
-  #     - idus-network
-
 volumes:
   postgres_data:
 
