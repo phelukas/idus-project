@@ -1,32 +1,33 @@
 import { BASE_URL } from "./config";
+import Cookies from "js-cookie";
 
-/**
- * Salvar tokens no localStorage com validação.
- * @param {Object} tokens { access, refresh }
- */
 export function saveTokens({ access, refresh }) {
-  if (access) localStorage.setItem("access_token", access);
-  if (refresh) localStorage.setItem("refresh_token", refresh);
+  if (typeof window !== "undefined") {
+    console.log("Definindo cookies:", { access, refresh });
+
+    if (access) Cookies.set("access_token", access, { expires: 7, path: "/" });
+    if (refresh)
+      Cookies.set("refresh_token", refresh, { expires: 30, path: "/" });
+  }
 }
 
-/**
- * Obter token de acesso.
- * @returns {string|null} Token de acesso
- */
-export const getAccessToken = () => localStorage.getItem("access_token");
+export const getAccessToken = () => {
+  if (typeof window !== "undefined") {
+    return Cookies.get("access_token");
+  }
+  return null;
+};
 
-/**
- * Obter token de refresh.
- * @returns {string|null} Token de refresh
- */
-export const getRefreshToken = () => localStorage.getItem("refresh_token");
+export const getRefreshToken = () => {
+  if (typeof window !== "undefined") {
+    return Cookies.get("refresh_token");
+  }
+  return null;
+};
 
-/**
- * Limpar tokens (logout).
- */
 export const clearTokens = () => {
-  localStorage.removeItem("access_token");
-  localStorage.removeItem("refresh_token");
+  Cookies.remove("access_token", { path: "/" });
+  Cookies.remove("refresh_token", { path: "/" });
 };
 
 /**
@@ -37,6 +38,10 @@ export async function refreshAccessToken() {
   const refreshToken = getRefreshToken();
 
   if (!refreshToken) {
+    clearTokens();
+    if (typeof window !== "undefined") {
+      window.location.href = "/";
+    }
     throw new Error("Token de refresh não encontrado. Faça login novamente.");
   }
 
@@ -49,6 +54,9 @@ export async function refreshAccessToken() {
 
     if (!response.ok) {
       clearTokens();
+      if (typeof window !== "undefined") {
+        window.location.href = "/";
+      }
       throw new Error("Falha ao renovar o token. Faça login novamente.");
     }
 
@@ -58,6 +66,9 @@ export async function refreshAccessToken() {
   } catch (error) {
     console.error("Erro ao renovar token:", error.message);
     clearTokens();
+    if (typeof window !== "undefined") {
+      window.location.href = "/";
+    }
     throw error;
   }
 }
