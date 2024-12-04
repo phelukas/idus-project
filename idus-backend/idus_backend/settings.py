@@ -19,7 +19,13 @@ SECRET_KEY = config(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config("DEBUG", default=False, cast=bool)
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "idus-backend",  # Nome do container backend
+    "www.phelukas.com.br",  # Seu domínio público
+]
+
 
 SECURE_SSL_REDIRECT = False
 CSRF_COOKIE_SECURE = False
