@@ -2,7 +2,6 @@ from datetime import timedelta
 from pathlib import Path
 from decouple import config
 
-CORS_ALLOWED_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:8000']
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -71,18 +70,16 @@ WSGI_APPLICATION = "idus_backend.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": config("DATABASE_NAME", default="idusdb"),
         "USER": config("DATABASE_USER", default="idususer"),
         "PASSWORD": config("DATABASE_PASSWORD", default="iduspass"),
-        "HOST": config("DATABASE_HOST", default="localhost"),
+        "HOST": config("DATABASE_HOST", default="db"),
         "PORT": config("DATABASE_PORT", default="5432"),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -162,3 +159,6 @@ SWAGGER_SETTINGS = {
         }
     }
 }
+
+
+CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", default="").split(",")

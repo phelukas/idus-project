@@ -1,5 +1,4 @@
 version: "3.9"
-
 services:
   frontend:
     build:
@@ -14,19 +13,11 @@ services:
     build:
       context: ./idus-backend
     container_name: idus-backend
-    environment:
-      DATABASE_NAME: idusdb
-      DATABASE_USER: idususer
-      DATABASE_PASSWORD: iduspass
-      DATABASE_HOST: idus-db
-      DATABASE_PORT: 5432
-      ALLOWED_HOSTS: localhost,127.0.0.1
-      CORS_ALLOWED_ORIGINS: http://localhost:3000,http://127.0.0.1:8000
     ports:
       - "8000:8000"
     depends_on:
       - db
-
+      
   db:
     image: postgres:15-alpine
     container_name: idus-db
