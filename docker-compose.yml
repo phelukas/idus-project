@@ -9,6 +9,8 @@ services:
       - "3000:3000"
     depends_on:
       - backend
+    networks:
+      - idus-network
 
   backend:
     build:
@@ -20,12 +22,14 @@ services:
       DATABASE_PASSWORD: iduspass
       DATABASE_HOST: idus-db
       DATABASE_PORT: 5432
-      ALLOWED_HOSTS: localhost,127.0.0.1
-      CORS_ALLOWED_ORIGINS: http://localhost:3000,http://127.0.0.1:8000
+      ALLOWED_HOSTS: localhost,127.0.0.1,www.phelukas.com.br
+      CORS_ALLOWED_ORIGINS: http://localhost:3000,http://127.0.0.1:8000,https://www.phelukas.com.br
     ports:
       - "8000:8000"
     depends_on:
       - db
+    networks:
+      - idus-network
 
   db:
     image: postgres:15-alpine
@@ -36,6 +40,8 @@ services:
       POSTGRES_DB: idusdb
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - idus-network
 
   nginx:
     image: nginx:latest
@@ -44,12 +50,18 @@ services:
       - /etc/letsencrypt/live/www.phelukas.com.br:/etc/letsencrypt/live/www.phelukas.com.br:ro
       - /etc/letsencrypt/archive:/etc/letsencrypt/archive:ro
       - /etc/letsencrypt/keys:/etc/letsencrypt/keys:ro
+      - ./nginx:/etc/nginx/conf.d # Monte a configuração do Nginx
     ports:
       - "80:80"
       - "443:443"
     depends_on:
       - frontend
       - backend
+    networks:
+      - idus-network
 
 volumes:
   postgres_data:
+
+networks:
+  idus-network:
