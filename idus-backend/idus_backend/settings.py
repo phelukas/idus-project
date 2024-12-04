@@ -142,7 +142,7 @@ SIMPLE_JWT = {
     ),
 }
 
-CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", default="").split(",")
+CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", default=["localhost","127.0.0.1"]).split(",")
 
 
 AUTHENTICATION_BACKENDS = [
