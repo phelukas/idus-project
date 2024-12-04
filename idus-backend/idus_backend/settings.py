@@ -2,9 +2,6 @@ from datetime import timedelta
 from pathlib import Path
 from decouple import config
 
-CORS_ALLOWED_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:8000']
-
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -14,7 +11,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config("SECRET_KEY", default="django-insecure-f55x+z^!6gcz52*w7%o7n5vt58ghciv#9@2epuk=)ug*##rcac")
+SECRET_KEY = config(
+    "SECRET_KEY",
+    default="django-insecure-f55x+z^!6gcz52*w7%o7n5vt58ghciv#9@2epuk=)ug*##rcac",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config("DEBUG", default=False, cast=bool)
@@ -27,9 +27,9 @@ ALLOWED_HOSTS = [
 ]
 
 
-SECURE_SSL_REDIRECT = True
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = False
+CSRF_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = False
 
 
 # Application definition
@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     "users",
     "workpoints",
     "corsheaders",
-    "drf_spectacular"
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
@@ -65,7 +65,7 @@ ROOT_URLCONF = "idus_backend.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -78,23 +78,22 @@ TEMPLATES = [
     },
 ]
 
+
 WSGI_APPLICATION = "idus_backend.wsgi.application"
 
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": config("DATABASE_NAME", default="idusdb"),
         "USER": config("DATABASE_USER", default="idususer"),
         "PASSWORD": config("DATABASE_PASSWORD", default="iduspass"),
-        "HOST": config("DATABASE_HOST", default="localhost"),
+        "HOST": config("DATABASE_HOST", default="db"),
         "PORT": config("DATABASE_PORT", default="5432"),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -157,7 +156,6 @@ SIMPLE_JWT = {
 }
 
 
-
 AUTHENTICATION_BACKENDS = [
     "users.backends.CPFBackend",
     "django.contrib.auth.backends.ModelBackend",
@@ -174,3 +172,6 @@ SWAGGER_SETTINGS = {
         }
     }
 }
+
+
+CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", default="").split(",")

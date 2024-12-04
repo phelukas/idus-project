@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { getAccessToken } from "../../api/auth"; 
 import { createUser } from "../../api/user";
 import CreateUserForm from "../../components/CreateUserForm";
 import ErrorMessage from "../../components/ErrorMessage";
@@ -21,6 +22,14 @@ const CreateUser = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const router = useRouter();
+
+  useEffect(() => {
+    const token = getAccessToken();
+    if (!token) {
+      router.push("/");
+    }
+  }, [router]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
