@@ -106,13 +106,13 @@ export const downloadWorkPointPDF = async (userId, date) => {
       throw new Error(errorData.detail || "Erro ao gerar o relatório em PDF.");
     }
 
-    const blob = await response.blob(); // Obtém o arquivo PDF como blob
-    const url = window.URL.createObjectURL(blob); // Cria uma URL temporária para o arquivo
+    const blob = await response.blob(); 
+    const url = window.URL.createObjectURL(blob); 
     const link = document.createElement("a");
     link.href = url;
-    link.download = `relatorio_${userId}_${date}.pdf`; // Nome do arquivo
-    link.click(); // Inicia o download
-    window.URL.revokeObjectURL(url); // Revoga a URL temporária após o uso
+    link.download = `relatorio_${userId}_${date}.pdf`;
+    link.click();
+    window.URL.revokeObjectURL(url); 
   } catch (error) {
     console.error("Erro ao baixar PDF:", error.message);
     throw error;
