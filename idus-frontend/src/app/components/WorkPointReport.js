@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { getWorkPointReport } from "../api/user";
+import { getWorkPointReport, downloadWorkPointPDF } from "../api/user";
 import { useParams } from "next/navigation";
 import DateInput from "../components/DateInput";
 import ErrorMessage from "../components/ErrorMessage";
@@ -47,6 +47,23 @@ const WorkPointReport = () => {
     }
   };
 
+  const handleDownloadPDF = async () => {
+    if (!validateInputs()) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      await downloadWorkPointPDF(id, reportDate);
+    } catch {
+      setError(
+        "Erro ao baixar o relatório em PDF. Verifique a data ou tente novamente."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 py-10">
       <div className="max-w-3xl mx-auto bg-white shadow-md rounded-lg p-6 border border-gray-200">
@@ -65,6 +82,18 @@ const WorkPointReport = () => {
         )}
         {error && <ErrorMessage message={error} />}
         {report && <ReportDetails report={report} />}
+
+        {report && (
+          <div className="mt-6 flex justify-center">
+            <button
+              className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
+              onClick={handleDownloadPDF}
+              disabled={loading}
+            >
+              Baixar Relatório em PDF
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

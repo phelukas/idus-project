@@ -1,6 +1,12 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
-from .views import WorkPointViewSet, DailySummaryView, WorkPointReportView
+from .views import (
+    WorkPointViewSet,
+    DailySummaryView,
+    WorkPointReportView,
+    WorkPointPDFReportView,
+)
+
 
 router = DefaultRouter()
 router.register(r"workpoints", WorkPointViewSet, basename="workpoint")
@@ -24,5 +30,10 @@ urlpatterns = [
         "workpoints/<uuid:id>/register-point-manual/",
         WorkPointViewSet.as_view({"post": "register_point_manual"}),
         name="register-point-manual",
+    ),
+    path(
+        "workpoints/report/<uuid:id>/pdf/",
+        WorkPointPDFReportView.as_view(),
+        name="workpoint-report-pdf",
     ),
 ]

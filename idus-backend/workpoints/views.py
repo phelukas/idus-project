@@ -1,16 +1,24 @@
+# Imports padrão do Python
 from datetime import datetime, timedelta
+from uuid import UUID
+
+# Imports do Django
+from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+
+# Imports de bibliotecas de terceiros
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.parsers import JSONParser
-from rest_framework.exceptions import PermissionDenied
-from django.shortcuts import get_object_or_404
-from django.contrib.auth import get_user_model
-from rest_framework.exceptions import NotFound
-from uuid import UUID
+from rest_framework.exceptions import PermissionDenied, NotFound
+from xhtml2pdf import pisa
 
+# Imports do aplicativo local
 from .models import WorkPoint
 from .serializers import WorkPointSerializer
 from .utils import (
@@ -20,7 +28,66 @@ from .utils import (
     calculate_extra_hours,
 )
 
+
 User = get_user_model()
+
+
+class WorkPointPDFReportView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_user(self, request, user_id=None):
+        """Helper para verificar permissões e retornar o usuário correto."""
+        if user_id:
+            if request.user.is_staff or str(request.user.id) == user_id:
+                return get_object_or_404(User, id=user_id)
+            raise PermissionDenied("Você só pode acessar seus próprios dados.")
+        return request.user
+
+    def get(self, request, *args, **kwargs):
+        """
+        Gera um relatório PDF para os pontos de trabalho do usuário em uma data específica.
+        """
+        user = self.get_user(request, kwargs.get("id"))
+        date_param = request.query_params.get("date")
+
+        if not date_param:
+            return Response(
+                {"detail": "Parâmetro 'date' é obrigatório no formato YYYY-MM-DD."},
+                status=400,
+            )
+
+        try:
+            report_date = datetime.strptime(date_param, "%Y-%m-%d").date()
+        except ValueError:
+            return Response(
+                {"detail": "Formato de data inválido. Use YYYY-MM-DD."},
+                status=400,
+            )
+
+        points = WorkPoint.objects.filter(
+            user=user, timestamp__date=report_date
+        ).order_by("timestamp")
+
+        metrics = WorkPointReportView().calculate_report_metrics(points)
+        formatted_points = WorkPointReportView().format_points(points)
+        context = {
+            "user": user,
+            "date": report_date.strftime("%d/%m/%Y"),
+            "points": formatted_points,
+            **metrics,
+        }
+
+        html = render_to_string("workpoints/report.html", context)
+        response = HttpResponse(content_type="application/pdf")
+        response["Content-Disposition"] = (
+            f"attachment; filename=relatorio_{user.id}_{date_param}.pdf"
+        )
+
+        pisa_status = pisa.CreatePDF(html, dest=response)
+
+        if pisa_status.err:
+            return Response({"detail": "Erro ao gerar o PDF."}, status=500)
+        return response
 
 
 class WorkPointViewSet(viewsets.ModelViewSet):
