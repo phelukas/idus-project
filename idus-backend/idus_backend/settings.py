@@ -10,7 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config("SECRET_KEY")
+SECRET_KEY = config("SECRET_KEY", default="django-insecure-f55x+z^!6gcz52*w7%o7n5vt58ghciv#9@2epuk=)ug*##rcac")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config("DEBUG", default=False, cast=bool)
@@ -73,9 +73,9 @@ WSGI_APPLICATION = "idus_backend.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": config("DATABASE_NAME"),
-        "USER": config("DATABASE_USER"),
-        "PASSWORD": config("DATABASE_PASSWORD"),
+        "NAME": config("DATABASE_NAME", default="idusdb"),
+        "USER": config("DATABASE_USER", default="idususer"),
+        "PASSWORD": config("DATABASE_PASSWORD", default="default"),
         "HOST": config("DATABASE_HOST", default="localhost"),
         "PORT": config("DATABASE_PORT", default="5432"),
     }
