@@ -40,10 +40,13 @@ services:
   nginx:
     image: nginx:latest
     container_name: idus-nginx
+    volumes:
+      - /etc/letsencrypt/live/www.phelukas.com.br:/etc/letsencrypt/live/www.phelukas.com.br:ro
+      - /etc/letsencrypt/archive:/etc/letsencrypt/archive:ro
+      - /etc/letsencrypt/keys:/etc/letsencrypt/keys:ro
     ports:
       - "80:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - "443:443"
     depends_on:
       - frontend
       - backend
