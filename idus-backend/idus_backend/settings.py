@@ -19,7 +19,13 @@ SECRET_KEY = config("SECRET_KEY", default="django-insecure-f55x+z^!6gcz52*w7%o7n
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config("DEBUG", default=False, cast=bool)
 
-ALLOWED_HOSTS = ['www.phelukas.com.br', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "idus-backend",  # Nome do container backend
+    "www.phelukas.com.br",  # Seu domínio público
+]
+
 
 SECURE_SSL_REDIRECT = True
 CSRF_COOKIE_SECURE = True
