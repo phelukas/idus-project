@@ -46,6 +46,8 @@ class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data["cpf"] = sub(r"[^\d]", "", validated_data["cpf"])
 
+        is_superuser = validated_data.get("role") == "admin"
+
         user = User.objects.create_user(
             cpf=validated_data["cpf"],
             email=validated_data["email"],
@@ -55,6 +57,8 @@ class UserSerializer(serializers.ModelSerializer):
             password=validated_data["password"],
             role=validated_data.get("role", "common"),
             work_schedule=validated_data.get("work_schedule"),
+            is_superuser=is_superuser,
+            is_staff=is_superuser,
         )
         return user
 
