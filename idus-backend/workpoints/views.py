@@ -116,7 +116,7 @@ class WorkPointViewSet(viewsets.ModelViewSet):
             except ValueError:
                 raise NotFound("ID inválido.")
 
-            if request.user.is_staff or str(request.user.id) == user_id:
+            if request.user.is_staff or request.user.id == user_id:
                 return get_object_or_404(User, id=user_id)
             raise PermissionDenied("Você não tem permissão para acessar este usuário.")
         return request.user
@@ -220,7 +220,7 @@ class WorkPointReportView(APIView):
         Verifica permissões e retorna o usuário autorizado.
         """
         if user_id:
-            if request.user.is_staff or str(request.user.id) == user_id:
+            if request.user.is_staff or request.user.id == user_id:
                 return get_object_or_404(User, id=user_id)
             raise PermissionDenied("Você só pode acessar seus próprios dados.")
         return request.user
