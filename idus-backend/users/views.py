@@ -93,6 +93,11 @@ class UserUpdateView(UpdateAPIView):
         serializer = self.get_serializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
+            password = serializer.validated_data.get("password")
+            if password:
+                user.set_password(password)
+                user.save()
+
             return Response(
                 {"detail": "Usuário atualizado com sucesso.", "data": serializer.data},
                 status=status.HTTP_200_OK,
@@ -101,6 +106,7 @@ class UserUpdateView(UpdateAPIView):
             {"detail": "Erro ao atualizar o usuário.", "errors": serializer.errors},
             status=status.HTTP_400_BAD_REQUEST,
         )
+
 
 
 class UserDeleteView(DestroyAPIView):
