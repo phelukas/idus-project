@@ -15,6 +15,7 @@ export function EditUserModal({
     cpf: user?.cpf || "",
     birth_date: user?.birth_date || "",
     work_schedule: user?.work_schedule || "8h",
+    password: "",
   });
 
   const [formErrors, setFormErrors] = useState(null);
@@ -28,6 +29,7 @@ export function EditUserModal({
       cpf: user?.cpf || "",
       birth_date: user?.birth_date || "",
       work_schedule: user?.work_schedule || "8h",
+      password: "",
     });
     setFormErrors(null);
   };
@@ -39,6 +41,12 @@ export function EditUserModal({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const dataToSubmit = { ...formData };
+    if (!formData.password) {
+      delete dataToSubmit.password;
+    }
+
     try {
       await handleUpdateUser(formData);
       setFormErrors(null);
@@ -141,6 +149,23 @@ export function EditUserModal({
               onChange={handleChange}
               className="w-full px-3 py-2 border border-black rounded text-black"
               required
+            />
+          </div>
+          <div>
+            <label
+              className="block text-gray-700 font-semibold mb-2"
+              htmlFor="password"
+            >
+              Nova Senha
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-black rounded text-black"
+              placeholder="Digite uma nova senha"
             />
           </div>
           <div>
