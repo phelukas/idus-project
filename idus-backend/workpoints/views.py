@@ -112,7 +112,7 @@ class WorkPointViewSet(viewsets.ModelViewSet):
         """
         if user_id:
             try:
-                UUID(user_id)
+                user_id = UUID(user_id)
             except ValueError:
                 raise NotFound("ID inválido.")
 
