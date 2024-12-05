@@ -37,8 +37,13 @@ class WorkPointPDFReportView(APIView):
 
     def get_user(self, request, user_id=None):
         """Helper para verificar permissões e retornar o usuário correto."""
+        print("*"*10)
+        print(user_id)
+        print(type(user_id))
+        print(request.user.id)
+        print()
         if user_id:
-            if request.user.is_staff or str(request.user.id) == user_id:
+            if request.user.is_staff or request.user.id == user_id:
                 return get_object_or_404(User, id=user_id)
             raise PermissionDenied("Você só pode acessar seus próprios dados.")
         return request.user
@@ -112,11 +117,10 @@ class WorkPointViewSet(viewsets.ModelViewSet):
         """
         if user_id:
             try:
-                UUID(user_id)
+                user_id = UUID(user_id)
             except ValueError:
                 raise NotFound("ID inválido.")
-
-            if request.user.is_staff or str(request.user.id) == user_id:
+            if request.user.is_staff or request.user.id == user_id:
                 return get_object_or_404(User, id=user_id)
             raise PermissionDenied("Você não tem permissão para acessar este usuário.")
         return request.user
@@ -220,7 +224,7 @@ class WorkPointReportView(APIView):
         Verifica permissões e retorna o usuário autorizado.
         """
         if user_id:
-            if request.user.is_staff or str(request.user.id) == user_id:
+            if request.user.is_staff or request.user.id == user_id:
                 return get_object_or_404(User, id=user_id)
             raise PermissionDenied("Você só pode acessar seus próprios dados.")
         return request.user

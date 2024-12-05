@@ -37,7 +37,7 @@ class UserInfoView(APIView):
     def get(self, request, *args, **kwargs):
         user_id = kwargs.get("id")
         if user_id:
-            if not request.user.is_staff and str(request.user.id) != user_id:
+            if not request.user.is_staff and request.user.id != user_id:
                 return Response(
                     {"detail": "Acesso não autorizado."},
                     status=status.HTTP_403_FORBIDDEN,
