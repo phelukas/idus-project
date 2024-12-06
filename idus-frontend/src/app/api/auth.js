@@ -3,7 +3,6 @@ import Cookies from "js-cookie";
 
 export function saveTokens({ access, refresh }) {
   if (typeof window !== "undefined") {
-    console.log("Definindo cookies:", { access, refresh });
 
     if (access) Cookies.set("access_token", access, { expires: 7, path: "/" });
     if (refresh)

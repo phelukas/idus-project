@@ -10,7 +10,8 @@ import ReportDetails from "../components/ReportDetails";
 const WorkPointReport = () => {
   const { id } = useParams();
 
-  const [reportDate, setReportDate] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -21,8 +22,13 @@ const WorkPointReport = () => {
       return false;
     }
 
-    if (!reportDate) {
-      setError("Por favor, insira uma data válida no formato YYYY-MM-DD.");
+    if (!startDate || !endDate) {
+      setError("Por favor, insira datas válidas no formato YYYY-MM-DD.");
+      return false;
+    }
+
+    if (startDate > endDate) {
+      setError("A data de início não pode ser maior que a data de fim.");
       return false;
     }
 
@@ -36,11 +42,11 @@ const WorkPointReport = () => {
     setError(null);
 
     try {
-      const data = await getWorkPointReport(id, reportDate);
+      const data = await getWorkPointReport(id, { startDate, endDate });
       setReport(data);
     } catch {
       setError(
-        "Erro ao buscar relatório. Verifique a data ou tente novamente."
+        "Erro ao buscar relatório. Verifique as datas ou tente novamente."
       );
     } finally {
       setLoading(false);
@@ -54,10 +60,10 @@ const WorkPointReport = () => {
     setError(null);
 
     try {
-      await downloadWorkPointPDF(id, reportDate);
+      await downloadWorkPointPDF(id, { startDate, endDate });
     } catch {
       setError(
-        "Erro ao baixar o relatório em PDF. Verifique a data ou tente novamente."
+        "Erro ao baixar o relatório em PDF. Verifique as datas ou tente novamente."
       );
     } finally {
       setLoading(false);
@@ -72,8 +78,10 @@ const WorkPointReport = () => {
         </h1>
 
         <DateInput
-          reportDate={reportDate}
-          setReportDate={setReportDate}
+          startDate={startDate}
+          setStartDate={setStartDate}
+          endDate={endDate}
+          setEndDate={setEndDate}
           handleFetchReport={handleFetchReport}
         />
 
