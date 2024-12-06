@@ -1,33 +1,34 @@
 # Imports padrão do Python
-from datetime import datetime, timedelta
 from uuid import UUID
+from datetime import datetime, timedelta
 
 # Imports do Django
-from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
+from django.utils.timezone import make_aware, now
 
 # Imports de bibliotecas de terceiros
-from rest_framework import viewsets, status
-from rest_framework.views import APIView
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.exceptions import NotFound, PermissionDenied
+from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.decorators import action
-from rest_framework.parsers import JSONParser
-from rest_framework.exceptions import PermissionDenied, NotFound
+from rest_framework.views import APIView
 from xhtml2pdf import pisa
+import pytz
 
 # Imports do aplicativo local
 from .models import WorkPoint
 from .serializers import WorkPointSerializer
 from .utils import (
     calculate_completion_time,
-    calculate_worked_hours,
-    calculate_remaining_hours,
     calculate_extra_hours,
+    calculate_remaining_hours,
+    calculate_worked_hours,
 )
-
 
 User = get_user_model()
 
@@ -154,9 +155,12 @@ class WorkPointViewSet(viewsets.ModelViewSet):
         """
         Cria um ponto com base no último tipo registrado.
         """
+        if timestamp is None:
+            timestamp = now()
         last_type = self.get_last_point_type(user, timestamp)
         next_type = self.determine_next_point_type(last_type)
-        return WorkPoint.objects.create(user=user, type=next_type, timestamp=timestamp)
+        point = WorkPoint.objects.create(user=user, type=next_type, timestamp=timestamp)
+        return point
 
     def perform_create(self, serializer):
         """
@@ -202,7 +206,10 @@ class WorkPointViewSet(viewsets.ModelViewSet):
             )
 
         try:
-            timestamp = datetime.fromisoformat(timestamp)
+            timestamp = make_aware(
+                datetime.fromisoformat(timestamp), pytz.timezone("America/Sao_Paulo")
+            )
+
         except ValueError:
             return Response(
                 {
