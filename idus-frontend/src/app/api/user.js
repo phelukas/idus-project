@@ -82,10 +82,13 @@ export const registerPointManual = (userId, timestamp) =>
     timestamp,
   });
 
-export const getWorkPointReport = (userId, date) =>
-  apiRequest(`/workpoints/report/${userId}/?date=${date}`, "GET");
+export const getWorkPointReport = (userId, { startDate, endDate }) =>
+  apiRequest(
+    `/workpoints/report/${userId}/?start_date=${startDate}&end_date=${endDate}`,
+    "GET"
+  );
 
-export const downloadWorkPointPDF = async (userId, date) => {
+export const downloadWorkPointPDF = async (userId, { startDate, endDate }) => {
   const token = getAccessToken();
 
   const headers = {
@@ -94,7 +97,7 @@ export const downloadWorkPointPDF = async (userId, date) => {
 
   try {
     const response = await fetch(
-      `${BASE_URL}/workpoints/report/${userId}/pdf/?date=${date}`,
+      `${BASE_URL}/workpoints/report/${userId}/pdf/?start_date=${startDate}&end_date=${endDate}`,
       {
         method: "GET",
         headers,
@@ -106,13 +109,13 @@ export const downloadWorkPointPDF = async (userId, date) => {
       throw new Error(errorData.detail || "Erro ao gerar o relatório em PDF.");
     }
 
-    const blob = await response.blob(); 
-    const url = window.URL.createObjectURL(blob); 
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `relatorio_${userId}_${date}.pdf`;
+    link.download = `relatorio_${userId}_${startDate}_to_${endDate}.pdf`;
     link.click();
-    window.URL.revokeObjectURL(url); 
+    window.URL.revokeObjectURL(url);
   } catch (error) {
     console.error("Erro ao baixar PDF:", error.message);
     throw error;

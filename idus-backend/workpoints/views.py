@@ -37,11 +37,6 @@ class WorkPointPDFReportView(APIView):
 
     def get_user(self, request, user_id=None):
         """Helper para verificar permissões e retornar o usuário correto."""
-        print("*"*10)
-        print(user_id)
-        print(type(user_id))
-        print(request.user.id)
-        print()
         if user_id:
             if request.user.is_staff or request.user.id == user_id:
                 return get_object_or_404(User, id=user_id)
@@ -50,34 +45,45 @@ class WorkPointPDFReportView(APIView):
 
     def get(self, request, *args, **kwargs):
         """
-        Gera um relatório PDF para os pontos de trabalho do usuário em uma data específica.
+        Gera um relatório PDF para os pontos de trabalho do usuário em um período específico.
         """
         user = self.get_user(request, kwargs.get("id"))
-        date_param = request.query_params.get("date")
+        start_date_param = request.query_params.get("start_date")
+        end_date_param = request.query_params.get("end_date")
 
-        if not date_param:
+        if not start_date_param or not end_date_param:
             return Response(
-                {"detail": "Parâmetro 'date' é obrigatório no formato YYYY-MM-DD."},
+                {
+                    "detail": "Os parâmetros 'start_date' e 'end_date' são obrigatórios no formato YYYY-MM-DD."
+                },
                 status=400,
             )
 
         try:
-            report_date = datetime.strptime(date_param, "%Y-%m-%d").date()
+            start_date = datetime.strptime(start_date_param, "%Y-%m-%d").date()
+            end_date = datetime.strptime(end_date_param, "%Y-%m-%d").date()
         except ValueError:
             return Response(
                 {"detail": "Formato de data inválido. Use YYYY-MM-DD."},
                 status=400,
             )
 
+        if start_date > end_date:
+            return Response(
+                {"detail": "'start_date' não pode ser maior que 'end_date'."},
+                status=400,
+            )
+
         points = WorkPoint.objects.filter(
-            user=user, timestamp__date=report_date
+            user=user, timestamp__date__range=(start_date, end_date)
         ).order_by("timestamp")
 
         metrics = WorkPointReportView().calculate_report_metrics(points)
         formatted_points = WorkPointReportView().format_points(points)
         context = {
             "user": user,
-            "date": report_date.strftime("%d/%m/%Y"),
+            "start_date": start_date.strftime("%d/%m/%Y"),
+            "end_date": end_date.strftime("%d/%m/%Y"),
             "points": formatted_points,
             **metrics,
         }
@@ -85,7 +91,7 @@ class WorkPointPDFReportView(APIView):
         html = render_to_string("workpoints/report.html", context)
         response = HttpResponse(content_type="application/pdf")
         response["Content-Disposition"] = (
-            f"attachment; filename=relatorio_{user.id}_{date_param}.pdf"
+            f"attachment; filename=relatorio_{user.id}_{start_date_param}_to_{end_date_param}.pdf"
         )
 
         pisa_status = pisa.CreatePDF(html, dest=response)
@@ -271,27 +277,37 @@ class WorkPointReportView(APIView):
 
     def get(self, request, *args, **kwargs):
         """
-        Retorna os registros de pontos de trabalho e métricas detalhadas.
+        Retorna os registros de pontos de trabalho e métricas detalhadas para um período específico.
         """
         user = self.get_user(request, kwargs.get("id"))
-        date_param = request.query_params.get("date")
+        start_date_param = request.query_params.get("start_date")
+        end_date_param = request.query_params.get("end_date")
 
-        if not date_param:
+        if not start_date_param or not end_date_param:
             return Response(
-                {"detail": "Parâmetro 'date' é obrigatório no formato YYYY-MM-DD."},
+                {
+                    "detail": "Os parâmetros 'start_date' e 'end_date' são obrigatórios no formato YYYY-MM-DD."
+                },
                 status=400,
             )
 
         try:
-            report_date = datetime.strptime(date_param, "%Y-%m-%d").date()
+            start_date = datetime.strptime(start_date_param, "%Y-%m-%d").date()
+            end_date = datetime.strptime(end_date_param, "%Y-%m-%d").date()
         except ValueError:
             return Response(
                 {"detail": "Formato de data inválido. Use YYYY-MM-DD."},
                 status=400,
             )
 
+        if start_date > end_date:
+            return Response(
+                {"detail": "'start_date' não pode ser maior que 'end_date'."},
+                status=400,
+            )
+
         points = WorkPoint.objects.filter(
-            user=user, timestamp__date=report_date
+            user=user, timestamp__date__range=(start_date, end_date)
         ).order_by("timestamp")
 
         metrics = self.calculate_report_metrics(points)
@@ -304,7 +320,8 @@ class WorkPointReportView(APIView):
                     "first_name": user.first_name,
                     "last_name": user.last_name,
                 },
-                "date": report_date.strftime("%d/%m/%Y"),
+                "start_date": start_date.strftime("%d/%m/%Y"),
+                "end_date": end_date.strftime("%d/%m/%Y"),
                 "points": formatted_points,
                 **metrics,
             }
