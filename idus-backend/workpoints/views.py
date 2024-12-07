@@ -24,7 +24,6 @@ import pytz
 from .models import WorkPoint
 from .serializers import WorkPointSerializer
 from .utils import (
-    calculate_completion_time,
     calculate_extra_hours,
     calculate_remaining_hours,
     calculate_worked_hours,
@@ -144,37 +143,50 @@ class WorkPointReportView(APIView, UserPermissionMixin, DateValidationMixin):
         except ValueError as e:
             return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-        work_schedule = getattr(user, "work_schedule", None)
-        if not work_schedule:
-            return Response(
-                {"detail": "Horário de trabalho não definido para o usuário."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
         points = WorkPoint.objects.filter(
             user=user, timestamp__date__range=(start_date, end_date)
         ).order_by("timestamp")
 
+        all_dates = [
+            (start_date + timedelta(days=i))
+            for i in range((end_date - start_date).days + 1)
+        ]
+
+        grouped_points = {}
+        for point in points:
+            date = point.timestamp.date()
+            if date not in grouped_points:
+                grouped_points[date] = []
+            grouped_points[date].append(
+                {
+                    "time": point.timestamp.strftime("%H:%M:%S"),
+                    "type": point.type,
+                }
+            )
+
         formatted_points = [
-            {"timestamp": p.timestamp.strftime("%d/%m/%Y %H:%M:%S"), "type": p.type}
-            for p in points
+            {
+                "date_point": date.strftime("%d/%m/%Y"),
+                "weekday": date.strftime("%A").lower(),
+                "timestamp": grouped_points.get(date, []),
+            }
+            for date in all_dates
         ]
 
         total_worked = calculate_worked_hours(points)
-        remaining = calculate_remaining_hours(total_worked, work_schedule)
-        extra = calculate_extra_hours(total_worked, work_schedule)
+        remaining = calculate_remaining_hours(
+            total_worked, user.work_schedule, all_dates
+        )
+        extra = calculate_extra_hours(total_worked, user.work_schedule, all_dates)
         is_complete = remaining == timedelta()
-        completion_time = calculate_completion_time(points, work_schedule)
 
         metrics = {
             "total_worked": str(total_worked),
             "remaining_hours": str(remaining),
             "extra_hours": str(extra),
             "is_complete": is_complete,
-            "completion_time": (
-                completion_time.isoformat() if completion_time else None
-            ),
         }
+        
 
         return Response(
             {
@@ -197,48 +209,83 @@ class WorkPointPDFReportView(WorkPointReportView):
         if response.status_code != 200:
             return response
 
-        html = render_to_string("workpoints/report.html", response.data)
+        data = response.data
+
+        grouped_points = {}
+        for point in data["points"]:
+            date = point["date_point"]
+            weekday = point["weekday"]
+
+            if date not in grouped_points:
+                grouped_points[date] = {
+                    "date": date,
+                    "weekday": weekday,
+                    "entries": point["timestamp"],
+                    "total_worked": None,
+                }
+
+            points_for_day = [
+                datetime.strptime(entry["time"], "%H:%M:%S")
+                for entry in point["timestamp"]
+            ]
+
+            if len(points_for_day) % 2 == 0:
+                total_worked = timedelta()
+                for i in range(0, len(points_for_day), 2):
+                    total_worked += points_for_day[i + 1] - points_for_day[i]
+                grouped_points[date]["total_worked"] = str(total_worked)
+
+        html = render_to_string(
+            "workpoints/report.html",
+            {
+                "user": data["user"],
+                "start_date": data["start_date"],
+                "end_date": data["end_date"],
+                "report": list(grouped_points.values()),
+            },
+        )
+
         pdf_response = HttpResponse(content_type="application/pdf")
         pisa.CreatePDF(html, dest=pdf_response)
         pdf_response["Content-Disposition"] = "attachment; filename=relatorio.pdf"
         return pdf_response
 
 
-class DailySummaryView(APIView, UserPermissionMixin):
+class DailySummaryView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, *args, **kwargs):
-        """
-        Retorna o resumo do dia atual do usuário.
-        """
-        user = self.get_user(request, kwargs.get("id"))
+        user = request.user
         today = now().date()
         points = WorkPoint.objects.filter(user=user, timestamp__date=today).order_by(
             "timestamp"
         )
         work_schedule = getattr(user, "work_schedule", None)
+
         if not work_schedule:
             return Response(
                 {"detail": "Horário de trabalho não definido para o usuário."},
-                status=status.HTTP_400_BAD_REQUEST,
+                status=400,
             )
 
         total_worked = calculate_worked_hours(points)
-        remaining = calculate_remaining_hours(total_worked, work_schedule)
-        extra = calculate_extra_hours(total_worked, work_schedule)
+        remaining = calculate_remaining_hours(total_worked, work_schedule, [today])
+        extra = calculate_extra_hours(total_worked, work_schedule, [today])
         is_complete = remaining == timedelta()
-        completion_time = calculate_completion_time(points, work_schedule)
 
         return Response(
             {
                 "points": [
-                    {"timestamp": p.timestamp.isoformat(), "type": p.type}
+                    {
+                        "timestamp": p.timestamp.isoformat(),
+                        "type": p.type,
+                        "weekday": p.weekday,
+                    }
                     for p in points
                 ],
                 "total_worked": str(total_worked),
                 "remaining_hours": str(remaining),
                 "extra_hours": str(extra),
                 "is_complete": is_complete,
-                "completion_time": (
-                    completion_time.isoformat() if completion_time else None
-                ),
             }
         )

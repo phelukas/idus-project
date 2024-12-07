@@ -6,62 +6,94 @@
     <style>
       body {
         font-family: Arial, sans-serif;
-        margin: 20px;
+        margin: 0;
+        padding: 0;
+        color: #333;
+        font-size: 9px;
       }
 
-      h1,
-      h2 {
+      h1, h2, h3 {
         text-align: center;
+        margin: 5px 0;
+        font-size: 10px;
       }
 
       table {
         width: 100%;
         border-collapse: collapse;
-        margin-top: 20px;
+        margin-top: 5px;
       }
 
-      th,
-      td {
+      th, td {
         border: 1px solid #ddd;
-        padding: 8px;
+        padding: 2px;
         text-align: center;
       }
 
       th {
         background-color: #f2f2f2;
+        font-weight: bold;
+      }
+
+      @media print {
+        @page {
+          size: A4 landscape;
+          margin: 5mm;
+        }
+
+        body {
+          margin: 0;
+        }
+
+        table {
+          font-size: 8px;
+          page-break-inside: auto;
+        }
+
+        tr {
+          page-break-inside: avoid;
+        }
+
+        th, td {
+          padding: 2px;
+        }
       }
     </style>
   </head>
-
   <body>
-    <h1>Relatório de Pontos</h1>
-    <h2>{{ user.first_name }} {{ user.last_name }}</h2>
-    <h3>Período: {{ start_date }} a {{ end_date }}</h3>
-
     <table>
       <thead>
         <tr>
-          <th>Data e Hora</th>
-          <th>Tipo</th>
+          <th>Data</th>
+          <th>Dia</th>
+          <th>1ª Entrada</th>
+          <th>2ª Entrada</th>
+          <th>3ª Entrada</th>
+          <th>4ª Entrada</th>
+          <th>5ª Entrada</th>
+          <th>6ª Entrada</th>
+          <th>7ª Entrada</th>
+          <th>8ª Entrada</th>
+          <th>Jornada</th>
         </tr>
       </thead>
       <tbody>
-        {% for point in points %}
+        {% for day in report %}
         <tr>
-          <td>{{ point.timestamp }}</td>
-          <td>{{ point.type }}</td>
+          <td>{{ day.date }}</td>
+          <td>{{ day.weekday }}</td>
+          <td>{{ day.entries.0.time|default:"--" }}</td>
+          <td>{{ day.entries.1.time|default:"--" }}</td>
+          <td>{{ day.entries.2.time|default:"--" }}</td>
+          <td>{{ day.entries.3.time|default:"--" }}</td>
+          <td>{{ day.entries.4.time|default:"--" }}</td>
+          <td>{{ day.entries.5.time|default:"--" }}</td>
+          <td>{{ day.entries.6.time|default:"--" }}</td>
+          <td>{{ day.entries.7.time|default:"--" }}</td>
+          <td>{{ day.total_worked|default:"--" }}</td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
-
-    <h3>Resumo:</h3>
-    <p><strong>Horas Trabalhadas:</strong> {{ total_worked }}</p>
-    <p><strong>Horas Restantes:</strong> {{ remaining_hours }}</p>
-    <p><strong>Horas Extras:</strong> {{ extra_hours }}</p>
-    <p><strong>Completado:</strong> {{ is_complete|yesno:"Sim,Não" }}</p>
-    {% if completion_time %}
-    <p><strong>Hora de Conclusão:</strong> {{ completion_time }}</p>
-    {% endif %}
   </body>
 </html>
