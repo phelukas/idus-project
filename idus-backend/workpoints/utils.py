@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 
 def calculate_worked_hours(points):
@@ -11,23 +11,37 @@ def calculate_worked_hours(points):
 
     grouped_by_day = {}
     for point in points:
-        day = point.timestamp.date()
-        if day not in grouped_by_day:
-            grouped_by_day[day] = []
-        grouped_by_day[day].append(point)
+        if isinstance(point, dict):
+            day = datetime.strptime(point["date_point"], "%d/%m/%Y").date()
+            entries = point["timestamp"]
+        else:
+            day = point.timestamp.date()
+            entries = grouped_by_day.get(day, [])
+            entries.append(
+                {"time": point.timestamp.strftime("%H:%M:%S"), "type": point.type}
+            )
+        grouped_by_day[day] = entries
 
     total_hours = timedelta()
 
     for day, day_points in grouped_by_day.items():
-        day_points = sorted(day_points, key=lambda x: x.timestamp)
+        sorted_points = sorted(
+            day_points, key=lambda x: datetime.strptime(x["time"], "%H:%M:%S")
+        )
 
         daily_worked = timedelta()
-        for i in range(0, len(day_points) - 1, 2):
-            start = day_points[i]
-            end = day_points[i + 1]
+        i = 0
+        while i < len(sorted_points) - 1:
+            start = sorted_points[i]
+            end = sorted_points[i + 1]
 
-            if start.type == "in" and end.type == "out":
-                daily_worked += end.timestamp - start.timestamp
+            if start["type"] == "in" and end["type"] == "out":
+                start_time = datetime.strptime(start["time"], "%H:%M:%S")
+                end_time = datetime.strptime(end["time"], "%H:%M:%S")
+                daily_worked += end_time - start_time
+                i += 2
+            else:
+                i += 1
 
         total_hours += daily_worked
 
@@ -48,11 +62,10 @@ def calculate_remaining_hours(total_worked, work_schedule, period_days):
 
     total_target = timedelta()
     for day in period_days:
+        if isinstance(day, dict):
+            day = datetime.strptime(day["date_point"], "%d/%m/%Y").date()
         if day.weekday() < 5:
             total_target += daily_hours
-        else:
-
-            pass
 
     remaining = total_target - total_worked
 
@@ -73,6 +86,9 @@ def calculate_extra_hours(total_worked, work_schedule, period_days):
     total_target = timedelta()
 
     for day in period_days:
+        if isinstance(day, dict):
+            day = datetime.strptime(day["date_point"], "%d/%m/%Y").date()
+
         if day.weekday() < 5:
             total_target += daily_hours
         else:
