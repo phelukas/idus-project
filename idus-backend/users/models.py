@@ -43,6 +43,18 @@ class User(AbstractUser):
         default="common",
     )
     work_schedule = models.CharField(max_length=50, null=True, blank=True, default="8h")
+    scale = models.CharField(
+    max_length=10,
+    choices=[
+        ("5x1", "5x1"),
+        ("6x1", "6x1"),
+        ("12x36", "12x36"),
+        ("4h", "4 horas diárias (Estagiários)"),
+        ("6h", "6 horas diárias (Aprendizes)"),
+    ],
+    default="5x1",
+)
+
 
     USERNAME_FIELD = "cpf"
     REQUIRED_FIELDS = ["email", "first_name", "last_name"]
