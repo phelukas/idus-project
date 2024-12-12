@@ -13,7 +13,8 @@ const ReportDetails = ({ report }) => (
         }`}
       </p>
       <p className="text-gray-700">
-        <span className="font-semibold">Data:</span> {report.date || ""}
+        <span className="font-semibold">Período:</span>{" "}
+        {`${report.start_date || ""} a ${report.end_date || ""}`}
       </p>
     </div>
 

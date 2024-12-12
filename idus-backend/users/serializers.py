@@ -21,7 +21,7 @@ def validate_cpf(cpf):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True, required=False, allow_blank=True)
 
     class Meta:
         model = User
@@ -36,6 +36,12 @@ class UserSerializer(serializers.ModelSerializer):
             "work_schedule",
             "password",
         ]
+
+    def validate_password(self, value):
+        """Permite que o campo senha seja opcional ao atualizar."""
+        if value == "":
+            return None
+        return value
 
     def validate_cpf(self, value):
         """Valida o CPF fornecido."""
@@ -61,6 +67,16 @@ class UserSerializer(serializers.ModelSerializer):
             is_staff=is_superuser,
         )
         return user
+
+    def update(self, instance, validated_data):
+        password = validated_data.pop("password", None)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        if password:
+            instance.set_password(password)
+
+        instance.save()
+        return instance
 
 
 class UserSerializerInfo(serializers.ModelSerializer):

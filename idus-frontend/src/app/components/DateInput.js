@@ -1,17 +1,43 @@
-const DateInput = ({ reportDate, setReportDate, handleFetchReport }) => (
+const DateInput = ({
+  startDate,
+  setStartDate,
+  endDate,
+  setEndDate,
+  handleFetchReport,
+}) => (
   <div>
     <div className="mb-4">
       <label
-        htmlFor="report-date"
+        htmlFor="start-date"
         className="block text-gray-700 font-semibold mb-2"
       >
-        Data do Relatório
+        Data de Início
       </label>
       <input
         type="date"
-        id="report-date"
-        value={reportDate}
-        onChange={(e) => setReportDate(e.target.value)}
+        id="start-date"
+        value={startDate}
+        onChange={(e) => setStartDate(e.target.value)}
+        className="w-full px-3 py-2 border border-gray-900 rounded bg-white"
+        style={{
+          color: "black",
+          backgroundColor: "white",
+        }}
+      />
+    </div>
+
+    <div className="mb-4">
+      <label
+        htmlFor="end-date"
+        className="block text-gray-700 font-semibold mb-2"
+      >
+        Data de Fim
+      </label>
+      <input
+        type="date"
+        id="end-date"
+        value={endDate}
+        onChange={(e) => setEndDate(e.target.value)}
         className="w-full px-3 py-2 border border-gray-900 rounded bg-white"
         style={{
           color: "black",
