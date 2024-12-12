@@ -108,7 +108,6 @@ class UserUpdateView(UpdateAPIView):
         )
 
 
-
 class UserDeleteView(DestroyAPIView):
     """View para deletar um usuário específico."""
 

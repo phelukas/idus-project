@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getAccessToken } from "../../api/auth"; 
+import { getAccessToken } from "../../api/auth";
 import { createUser } from "../../api/user";
 import CreateUserForm from "../../components/CreateUserForm";
 import ErrorMessage from "../../components/ErrorMessage";
@@ -17,8 +17,9 @@ const CreateUser = () => {
     birth_date: "",
     password: "",
     role: "common",
-    work_schedule: "8h",
+    scale: "5x1",
   });
+
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const router = useRouter();

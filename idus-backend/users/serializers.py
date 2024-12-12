@@ -34,8 +34,10 @@ class UserSerializer(serializers.ModelSerializer):
             "birth_date",
             "role",
             "work_schedule",
+            "scale",
             "password",
         ]
+        read_only_fields = ["work_schedule"] 
 
     def validate_password(self, value):
         """Permite que o campo senha seja opcional ao atualizar."""
@@ -49,8 +51,31 @@ class UserSerializer(serializers.ModelSerializer):
             raise ValidationError("O CPF fornecido é inválido.")
         return value
 
+    def validate_scale(self, value):
+        """Valida a escala fornecida."""
+        valid_scales = ["5x1", "6x1", "12x36", "4h", "6h"]
+        if value not in valid_scales:
+            raise ValidationError(
+                f"Escala inválida. Use uma das seguintes: {', '.join(valid_scales)}."
+            )
+        return value
+
+    def set_work_schedule(self, scale):
+        """Define a jornada de trabalho com base na escala."""
+        schedules = {
+            "5x1": "8h",
+            "6x1": "8h",
+            "12x36": "12h",
+            "4h": "4h",
+            "6h": "6h",
+        }
+        return schedules.get(scale, "8h")
+
     def create(self, validated_data):
         validated_data["cpf"] = sub(r"[^\d]", "", validated_data["cpf"])
+        validated_data["work_schedule"] = self.set_work_schedule(
+            validated_data.get("scale")
+        )
 
         is_superuser = validated_data.get("role") == "admin"
 
@@ -62,13 +87,17 @@ class UserSerializer(serializers.ModelSerializer):
             birth_date=validated_data.get("birth_date"),
             password=validated_data["password"],
             role=validated_data.get("role", "common"),
-            work_schedule=validated_data.get("work_schedule"),
+            work_schedule=validated_data["work_schedule"],
+            scale=validated_data.get("scale", "5x1"),
             is_superuser=is_superuser,
             is_staff=is_superuser,
         )
         return user
 
     def update(self, instance, validated_data):
+        scale = validated_data.get("scale", instance.scale)
+        validated_data["work_schedule"] = self.set_work_schedule(scale)
+
         password = validated_data.pop("password", None)
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
@@ -91,4 +120,5 @@ class UserSerializerInfo(serializers.ModelSerializer):
             "birth_date",
             "role",
             "work_schedule",
+            "scale",
         ]

@@ -70,16 +70,20 @@ const CreateUserForm = ({ formData, handleInputChange, handleSubmit }) => (
       onChange={handleInputChange}
     />
     <FormField
-      label="Jornada de Trabalho"
-      id="work_schedule"
-      name="work_schedule"
+      label="Escala"
+      id="scale"
+      name="scale"
       type="select"
       options={[
-        { value: "6h", label: "6 Horas" },
-        { value: "8h", label: "8 Horas" },
+        { value: "5x1", label: "Tradicional (5x1)" },
+        { value: "6x1", label: "6x1" },
+        { value: "12x36", label: "12x36" },
+        { value: "4h", label: "4 horas diárias (Estagiário)" },
+        { value: "6h", label: "6 horas diárias (Aprendiz)" },
       ]}
-      value={formData.work_schedule}
+      value={formData.scale}
       onChange={handleInputChange}
+      required
     />
     <button
       type="submit"
