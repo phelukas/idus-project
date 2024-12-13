@@ -127,7 +127,7 @@ class WorkPointViewSet(viewsets.ModelViewSet, UserPermissionMixin):
     permission_classes = [IsAuthenticated]
     lookup_field = "id"
 
-    def create_point(self, user, timestamp=None):
+    def create_point(self, user, timestamp=None, latitude=None, longitude=None):
         timestamp = timestamp or datetime.now()
         timestamp = timestamp.replace(tzinfo=None, microsecond=timestamp.microsecond)
 
@@ -137,17 +137,34 @@ class WorkPointViewSet(viewsets.ModelViewSet, UserPermissionMixin):
             .first()
         )
         next_type = "in" if not last_type or last_type.type == "out" else "out"
-        return WorkPoint.objects.create(user=user, type=next_type, timestamp=timestamp)
+        return WorkPoint.objects.create(
+            user=user,
+            type=next_type,
+            timestamp=timestamp,
+            latitude=latitude,
+            longitude=longitude,
+        )
 
     @action(detail=True, methods=["post"], url_path="register-point")
     def register_point(self, request, id=None):
         user = self.get_user(request, id)
-        point = self.create_point(user)
+        latitude = request.data.get("latitude")
+        longitude = request.data.get("longitude")
+
+        if not latitude or not longitude:
+            return Response(
+                {"detail": "Latitude e longitude são obrigatórios."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        point = self.create_point(user, latitude=latitude, longitude=longitude)
         return Response(
             {
                 "detail": f"Ponto registrado com sucesso: {point.type}",
                 "timestamp": point.timestamp.isoformat(),
                 "type": point.type,
+                "latitude": point.latitude,
+                "longitude": point.longitude,
             },
             status=status.HTTP_201_CREATED,
         )

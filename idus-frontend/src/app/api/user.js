@@ -64,8 +64,11 @@ export const updateUser = (id, data) =>
 
 export const deleteUser = (id) => apiRequest(`/users/delete/${id}/`, "DELETE");
 
-export const registerPoint = (id) =>
-  apiRequest(`/workpoints/${id}/register-point/`, "POST");
+export const registerPoint = (id, latitude, longitude) =>
+  apiRequest(`/workpoints/${id}/register-point/`, "POST", {
+    latitude,
+    longitude,
+  });
 
 export const getDailySummary = (id = null) =>
   apiRequest(id ? `/summary/${id}/` : "/summary/", "GET");

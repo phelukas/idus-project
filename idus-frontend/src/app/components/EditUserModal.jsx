@@ -48,22 +48,17 @@ export function EditUserModal({
     }
 
     try {
-      await handleUpdateUser(formData);
+      await handleUpdateUser(dataToSubmit);
       setFormErrors(null);
       setShowModal(false);
     } catch (err) {
-      const isFormError =
+      const errorDetails =
         err.response?.data?.errors &&
-        typeof err.response.data.errors === "object";
-      const errorDetails = isFormError ? err.response.data.errors : null;
+        typeof err.response.data.errors === "object"
+          ? err.response.data.errors
+          : null;
 
-      setFormErrors(errorDetails);
-
-      if (!isFormError) {
-        console.error("Erro inesperado:", err.response || err.message);
-      }
-
-      return;
+      setFormErrors(errorDetails || { general: "Erro inesperado ao salvar." });
     }
   };
 
@@ -101,126 +96,98 @@ export function EditUserModal({
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label
-              className="block text-gray-700 font-semibold mb-2"
-              htmlFor="first_name"
-            >
+            <label className="block text-gray-700 font-semibold mb-2">
               Primeiro Nome
             </label>
             <input
               type="text"
-              id="first_name"
               name="first_name"
               value={formData.first_name}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-black rounded text-black"
+              className="w-full px-3 py-2 border rounded text-gray-800"
               required
             />
           </div>
           <div>
-            <label
-              className="block text-gray-700 font-semibold mb-2"
-              htmlFor="last_name"
-            >
+            <label className="block text-gray-700 font-semibold mb-2">
               Sobrenome
             </label>
             <input
               type="text"
-              id="last_name"
               name="last_name"
               value={formData.last_name}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-black rounded text-black"
+              className="w-full px-3 py-2 border rounded text-gray-800"
               required
             />
           </div>
           <div>
-            <label
-              className="block text-gray-700 font-semibold mb-2"
-              htmlFor="email"
-            >
+            <label className="block text-gray-700 font-semibold mb-2">
               Email
             </label>
             <input
               type="email"
-              id="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-black rounded text-black"
+              className="w-full px-3 py-2 border rounded text-gray-800"
               required
             />
           </div>
           <div>
-            <label
-              className="block text-gray-700 font-semibold mb-2"
-              htmlFor="password"
-            >
+            <label className="block text-gray-700 font-semibold mb-2">
               Nova Senha
             </label>
             <input
               type="password"
-              id="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-black rounded text-black"
+              className="w-full px-3 py-2 border rounded text-gray-800"
               placeholder="Digite uma nova senha"
             />
           </div>
           <div>
-            <label
-              className="block text-gray-700 font-semibold mb-2"
-              htmlFor="cpf"
-            >
+            <label className="block text-gray-700 font-semibold mb-2">
               CPF
             </label>
             <input
               type="text"
-              id="cpf"
               name="cpf"
               value={formData.cpf}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-black rounded text-black"
+              className="w-full px-3 py-2 border rounded text-gray-800"
               required
             />
           </div>
           <div>
-            <label
-              className="block text-gray-700 font-semibold mb-2"
-              htmlFor="birth_date"
-            >
+            <label className="block text-gray-700 font-semibold mb-2">
               Data de Nascimento
             </label>
             <input
               type="date"
-              id="birth_date"
               name="birth_date"
               value={formData.birth_date}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-black rounded text-black"
+              className="w-full px-3 py-2 border rounded text-gray-800"
               required
             />
           </div>
           <div>
-            <label
-              className="block text-gray-700 font-semibold mb-2"
-              htmlFor="work_schedule"
-            >
+            <label className="block text-gray-700 font-semibold mb-2">
               Jornada de Trabalho
             </label>
             <select
-              id="work_schedule"
               name="work_schedule"
               value={formData.work_schedule}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-black rounded text-black"
+              className="w-full px-3 py-2 border rounded text-gray-800"
             >
               <option value="6h">6 Horas</option>
               <option value="8h">8 Horas</option>
             </select>
           </div>
-          <ErrorMessage errors={formErrors}></ErrorMessage>
+          <ErrorMessage errors={formErrors} />
           <div className="flex justify-end space-x-4">
             <button
               type="button"
