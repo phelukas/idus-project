@@ -15,6 +15,12 @@ class WorkPoint(models.Model):
         max_length=10, choices=[("in", "Entrada"), ("out", "Saída")]
     )
     weekday = models.CharField(max_length=20, editable=False)
+    latitude = models.DecimalField(
+        max_digits=9, decimal_places=6, null=True, blank=True
+    )
+    longitude = models.DecimalField(
+        max_digits=9, decimal_places=6, null=True, blank=True
+    )
 
     def save(self, *args, **kwargs):
         if is_naive(self.timestamp):
