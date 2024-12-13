@@ -5,7 +5,7 @@ WORKDIR /app
 
 # Copiar arquivos necessários e instalar dependências
 COPY package.json package-lock.json /app/
-RUN npm install --no-cache \
+RUN npm install --no-cache --legacy-peer-deps \
     && rm -rf /tmp/* /var/cache/apk/* /root/.npm /root/.cache
 
 # Copiar o restante do código da aplicação
