@@ -1,0 +1,50 @@
+/* Estilo para o contêiner das abas */
+.tabs {
+  display: flex;
+  justify-content: center;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+/* Estilo base para os botões das abas */
+.tabButton {
+  padding: 0.5rem 1rem;
+  background-color: #f3f4f6;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  color: #374151;
+  border-radius: 4px;
+}
+
+/* Cor de fundo no hover */
+.tabButton:hover {
+  background-color: #e5e7eb;
+}
+
+/* Aba ativa com destaque */
+.activeTab {
+  border-bottom: 2px solid #2563eb;
+  font-weight: bold;
+  color: #2563eb;
+}
+/* Garantir que o modal esteja sempre acima de qualquer elemento */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Fundo escuro */
+  z-index: 1050; /* Maior que o Leaflet (tipicamente 1000) */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1060; /* Certifique-se de que seja maior que o overlay */
+}

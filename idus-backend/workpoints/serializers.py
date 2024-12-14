@@ -8,7 +8,7 @@ class WorkPointSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = WorkPoint
-        fields = ["id", "user", "timestamp", "type"]
+        fields = ["id", "user", "timestamp", "type", "latitude", "longitude"]
 
 
 class WorkPointReportSerializer(serializers.ModelSerializer):
