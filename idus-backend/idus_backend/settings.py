@@ -5,6 +5,9 @@ from decouple import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+CORS_ALLOWED_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:8000', "https://www.phelukas.com.br"]
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 SECRET_KEY = config(
     "SECRET_KEY",
@@ -13,7 +16,13 @@ SECRET_KEY = config(
 
 DEBUG = config("DEBUG", default=False, cast=bool)
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "idus-backend",  # Nome do container backend
+    "www.phelukas.com.br",  # Seu domínio público
+]
+
 
 SECURE_SSL_REDIRECT = False
 CSRF_COOKIE_SECURE = False
@@ -144,5 +153,3 @@ SWAGGER_SETTINGS = {
     }
 }
 
-
-CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", default="").split(",")

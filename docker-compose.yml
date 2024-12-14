@@ -8,16 +8,28 @@ services:
       - "3000:3000"
     depends_on:
       - backend
+    networks:
+      - idus-network
 
   backend:
     build:
       context: ./idus-backend
     container_name: idus-backend
+    environment:
+      DATABASE_NAME: idusdb
+      DATABASE_USER: idususer
+      DATABASE_PASSWORD: iduspass
+      DATABASE_HOST: idus-db
+      DATABASE_PORT: 5432
+      ALLOWED_HOSTS: localhost,127.0.0.1,www.phelukas.com.br
+      CORS_ALLOWED_ORIGINS: http://localhost:3000,http://127.0.0.1:8000,https://www.phelukas.com.br,http://www.phelukas.com.br
     ports:
       - "8000:8000"
     depends_on:
       - db
-      
+    networks:
+      - idus-network
+
   db:
     image: postgres:15-alpine
     container_name: idus-db
@@ -27,17 +39,11 @@ services:
       POSTGRES_DB: idusdb
     volumes:
       - postgres_data:/var/lib/postgresql/data
-
-  nginx:
-    image: nginx:latest
-    container_name: idus-nginx
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - frontend
-      - backend
+    networks:
+      - idus-network
 
 volumes:
   postgres_data:
+
+networks:
+  idus-network:
