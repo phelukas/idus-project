@@ -69,3 +69,12 @@ Os seguintes scripts podem ser usados com `npm run`:
 - `build`: Gera uma build de produção.
 - `start`: Inicia o servidor em modo de produção.
 - `lint`: Verifica o código com ESLint.
+- `test`: Executa a suíte de testes automatizados.
+
+## **Rodando os Testes**
+
+Para executar os testes unitários, utilize o seguinte comando:
+
+```bash
+npm test
+```
