@@ -121,11 +121,8 @@ class ReportMixin(DateUtilsMixin):
         return total_worked, remaining, extra
 
 
-class WorkPointViewSet(viewsets.ModelViewSet, UserPermissionMixin):
-    queryset = WorkPoint.objects.all()
-    serializer_class = WorkPointSerializer
-    permission_classes = [IsAuthenticated]
-    lookup_field = "id"
+class PointCreationMixin:
+    """Mixin to encapsulate the creation of WorkPoint instances."""
 
     def create_point(self, user, timestamp=None, latitude=None, longitude=None):
         timestamp = timestamp or datetime.now()
@@ -145,9 +142,21 @@ class WorkPointViewSet(viewsets.ModelViewSet, UserPermissionMixin):
             longitude=longitude,
         )
 
-    @action(detail=True, methods=["post"], url_path="register-point")
-    def register_point(self, request, id=None):
-        user = self.get_user(request, id)
+
+class WorkPointViewSet(viewsets.ModelViewSet, UserPermissionMixin, PointCreationMixin):
+    queryset = WorkPoint.objects.all()
+    serializer_class = WorkPointSerializer
+    permission_classes = [IsAuthenticated]
+    lookup_field = "id"
+
+
+class UserWorkPointView(viewsets.ViewSet, UserPermissionMixin, PointCreationMixin):
+    """Endpoints para registro de pontos por usuário."""
+
+    permission_classes = [IsAuthenticated]
+
+    def register_point(self, request, user_id=None):
+        user = self.get_user(request, user_id)
         latitude = request.data.get("latitude")
         longitude = request.data.get("longitude")
 
@@ -169,9 +178,8 @@ class WorkPointViewSet(viewsets.ModelViewSet, UserPermissionMixin):
             status=status.HTTP_201_CREATED,
         )
 
-    @action(detail=True, methods=["post"], url_path="register-point-manual")
-    def register_point_manual(self, request, id=None):
-        user = self.get_user(request, id)
+    def register_point_manual(self, request, user_id=None):
+        user = self.get_user(request, user_id)
         timestamp = request.data.get("timestamp")
 
         if not timestamp:
