@@ -128,3 +128,16 @@ def test_delete_user(client, admin_user, user):
     response = client.delete(f"/api/users/delete/{user.id}/")
     assert response.status_code == 204
     assert User.objects.filter(id=user.id).count() == 0
+
+
+def test_delete_self(client, user):
+    client.force_authenticate(user)
+    response = client.delete(f"/api/users/delete/{user.id}/")
+    assert response.status_code == 204
+    assert User.objects.filter(id=user.id).count() == 0
+
+
+def test_delete_other_forbidden(client, user, other_user):
+    client.force_authenticate(user)
+    response = client.delete(f"/api/users/delete/{other_user.id}/")
+    assert response.status_code == 403

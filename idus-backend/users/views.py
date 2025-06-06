@@ -115,6 +115,17 @@ class UserDeleteView(DestroyAPIView):
     queryset = User.objects.all()
     lookup_field = "id"
 
+    def get_object(self):
+        """Permite que usuários comuns deletem apenas o próprio cadastro."""
+        obj = super().get_object()
+
+        if not self.request.user.is_staff and obj != self.request.user:
+            raise PermissionDenied(
+                {"detail": "Você não tem permissão para deletar este usuário."}
+            )
+
+        return obj
+
     def destroy(self, request, *args, **kwargs):
         user = self.get_object()
         self.perform_destroy(user)
