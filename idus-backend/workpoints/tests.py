@@ -111,7 +111,7 @@ def test_register_point_manual_timezone_aware(db, user, client):
     aware_timestamp = "2024-11-29T09:00:00-03:00"
 
     response = client.post(
-        f"/api/workpoints/{user.id}/register-point-manual/",
+        f"/api/users/{user.id}/workpoints/register-point-manual/",
         {"timestamp": aware_timestamp},
         format="json",
     )

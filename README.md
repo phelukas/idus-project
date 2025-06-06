@@ -37,7 +37,7 @@ Este projeto consiste em um sistema com backend baseado em Django Rest Framework
    - **Backend API**: [http://localhost:8000/api/](http://localhost:8000/api/)
 
 4. **Personalize suas Configurações**
-   Se quiser algo diferente, abra o arquivo `.env` e deixe tudo do seu jeitinho 😉.
+   Primeiro, copie o arquivo `.env.example` para `.env` e depois ajuste os valores conforme desejar 😉.
 
 ## **Estrutura de Serviços**
 
@@ -47,7 +47,7 @@ Este projeto consiste em um sistema com backend baseado em Django Rest Framework
 
 ## **Como Personalizar**
 
-Se precisar ajustar alguma configuração, como variáveis de ambiente, edite o arquivo `.env` localizado na raiz do projeto. Exemplo:
+Se precisar ajustar alguma configuração, copie primeiro o arquivo `.env.example` para `.env` e edite-o com os valores desejados. Exemplo:
 
 ```env
 SECRET_KEY=django-insecure-f55x+z^!6gcz52*w7%o7n5vt58ghciv#9@2epuk=)ug*##rcac
