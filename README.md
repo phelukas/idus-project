@@ -89,3 +89,8 @@ CORS_ALLOWED_ORIGINS=http://localhost,http://127.0.0.1:3000
 **Relatorio de pontos**
 
 ![Diagrama de Entidade/Relacionamento](imagens-docs/tela-de-relatorio-de-ponto.png)
+
+## Licença
+
+Este projeto está licenciado sob os termos da [Licença MIT](LICENSE).
+
