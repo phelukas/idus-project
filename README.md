@@ -10,18 +10,18 @@ Este projeto consiste em um sistema com backend baseado em Django Rest Framework
 
 - **Docker** e **Docker Compose** instalados na máquina.
 
-## **Como Rodar o Projeto**
+## **Como Rodar o Projeto** 😄
 
-1. **Clone o Repositório**  
-   Clone este repositório na sua máquina local:
+1. **Clone o Repositório**
+   Venha de cabeça e copie o projeto para sua máquina:
 
    ```bash
    git clone https://github.com/phelukas/idus-project.git
    cd idus-project
    ```
 
-2. **Suba os Serviços com Docker Compose**  
-   Execute o seguinte comando:
+2. **Suba os Serviços com Docker Compose**
+   Rode o comando abaixo e faça um café enquanto tudo é configurado 🚀:
 
    ```bash
    docker-compose up --build
@@ -33,8 +33,11 @@ Este projeto consiste em um sistema com backend baseado em Django Rest Framework
    - Iniciar os containers para o backend, frontend e banco de dados.
 
 3. **Acesse o Sistema**
-   - **Frontend**: [http://localhost/](http://localhost:3000/)
-   - **Backend API**: [http://localhost/api/](http://localhost:8000/api/)
+   - **Frontend**: [http://localhost:3000](http://localhost:3000)
+   - **Backend API**: [http://localhost:8000/api/](http://localhost:8000/api/)
+
+4. **Personalize suas Configurações**
+   Se quiser algo diferente, abra o arquivo `.env` e deixe tudo do seu jeitinho 😉.
 
 ## **Estrutura de Serviços**
 
