@@ -12,9 +12,9 @@ export function PointsList({ points }) {
             </li>
           ))
         ) : (
-          <p className="text-center text-gray-500 mt-4">
+          <li className="py-2 text-center text-gray-500 mt-4">
             Nenhum ponto registrado hoje.
-          </p>
+          </li>
         )}
       </ul>
     </div>
