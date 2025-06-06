@@ -55,6 +55,21 @@ def test_create_user(client, admin_user):
     assert response.status_code == 201
     assert response.json()["detail"] == "Usuário criado com sucesso."
 
+
+def test_create_user_forbidden(client, user):
+    client.force_authenticate(user)
+    payload = {
+        "cpf": "88844477735",
+        "email": "forbidden@example.com",
+        "first_name": "Forbidden",
+        "last_name": "User",
+        "password": "password",
+        "role": "common",
+        "scale": "5x1",
+    }
+    response = client.post("/api/users/create/", payload, format="json")
+    assert response.status_code == 403
+
 # UserInfoView
 
 def test_info_self(client, user):

@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework import status
 from rest_framework.generics import UpdateAPIView, DestroyAPIView
 from django.shortcuts import get_object_or_404
@@ -12,7 +12,7 @@ from .serializers import UserSerializer, UserSerializerInfo
 class UserCreateView(APIView):
     """View para criação de novos usuários."""
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminUser]
 
     def post(self, request, *args, **kwargs):
         serializer = UserSerializer(data=request.data)
