@@ -5,6 +5,7 @@ from .views import (
     DailySummaryView,
     WorkPointReportView,
     WorkPointPDFReportView,
+    UserWorkPointView,
 )
 
 
@@ -22,13 +23,13 @@ urlpatterns = [
     ),
     path("workpoints/report/", WorkPointReportView.as_view(), name="workpoint-report"),
     path(
-        "workpoints/<uuid:id>/register-point/",
-        WorkPointViewSet.as_view({"post": "register_point"}),
+        "users/<uuid:user_id>/workpoints/register-point/",
+        UserWorkPointView.as_view({"post": "register_point"}),
         name="register-point",
     ),
     path(
-        "workpoints/<uuid:id>/register-point-manual/",
-        WorkPointViewSet.as_view({"post": "register_point_manual"}),
+        "users/<uuid:user_id>/workpoints/register-point-manual/",
+        UserWorkPointView.as_view({"post": "register_point_manual"}),
         name="register-point-manual",
     ),
     path(

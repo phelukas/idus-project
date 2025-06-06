@@ -97,7 +97,7 @@ def test_register_point_manual_invalid(db, user, client):
     invalid_timestamp = "2024-11-31T09:00:00"
 
     response = client.post(
-        f"/api/workpoints/{user.id}/register-point-manual/",
+        f"/api/users/{user.id}/workpoints/register-point-manual/",
         {"timestamp": invalid_timestamp},
         format="json",
     )
