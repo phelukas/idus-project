@@ -7,6 +7,18 @@ Este é o frontend do projeto **idus**, desenvolvido com **Next.js**. Ele se con
 - **Node.js** (versão 18 ou superior)
 - **Docker** (opcional, para rodar com container)
 
+## **Variáveis de Ambiente**
+
+Copie o arquivo `.env.example` para `.env` e ajuste o valor abaixo, caso
+necessário:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8000/api
+```
+
+Essa variável define a URL base utilizada pelo frontend para se comunicar com a
+API backend.
+
 ## **Como Rodar o Projeto**
 
 ### **1. Usando Docker (Recomendado)**
