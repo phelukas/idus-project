@@ -70,6 +70,20 @@ def test_create_user_forbidden(client, user):
     response = client.post("/api/users/create/", payload, format="json")
     assert response.status_code == 403
 
+
+def test_create_user_unauthenticated(client):
+    payload = {
+        "cpf": "99944477735",
+        "email": "noauth@example.com",
+        "first_name": "No",
+        "last_name": "Auth",
+        "password": "password",
+        "role": "common",
+        "scale": "5x1",
+    }
+    response = client.post("/api/users/create/", payload, format="json")
+    assert response.status_code == 401
+
 # UserInfoView
 
 def test_info_self(client, user):
@@ -141,3 +155,8 @@ def test_delete_other_forbidden(client, user, other_user):
     client.force_authenticate(user)
     response = client.delete(f"/api/users/delete/{other_user.id}/")
     assert response.status_code == 403
+
+
+def test_delete_user_unauthenticated(client, user):
+    response = client.delete(f"/api/users/delete/{user.id}/")
+    assert response.status_code == 401
