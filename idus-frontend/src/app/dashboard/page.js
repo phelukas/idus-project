@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { fetchUsers } from "../api/user";
+import { logout as removeTokens } from "../api/auth";
 
 export default function Dashboard() {
   const [users, setUsers] = useState([]);
@@ -41,7 +42,7 @@ export default function Dashboard() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("authToken");
+    removeTokens();
     router.push("/");
   };
 
