@@ -181,9 +181,14 @@ class WorkPointViewSet(viewsets.ModelViewSet, UserPermissionMixin):
             )
 
         try:
-            aware_timestamp = make_aware(
-                datetime.fromisoformat(timestamp), pytz.timezone("America/Sao_Paulo")
-            )
+            parsed_timestamp = datetime.fromisoformat(timestamp)
+            if parsed_timestamp.tzinfo is None or parsed_timestamp.tzinfo.utcoffset(parsed_timestamp) is None:
+                aware_timestamp = make_aware(
+                    parsed_timestamp,
+                    pytz.timezone("America/Sao_Paulo"),
+                )
+            else:
+                aware_timestamp = parsed_timestamp
         except ValueError:
             return Response(
                 {"detail": "Timestamp inválido. Use o formato ISO 8601."},
