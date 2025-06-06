@@ -37,5 +37,5 @@ class WorkPoint(models.Model):
 
     def __str__(self):
         return (
-            f"{self.user.username} - {self.type} em {self.timestamp} ({self.weekday})"
+            f"{self.user.cpf} - {self.type} em {self.timestamp} ({self.weekday})"
         )

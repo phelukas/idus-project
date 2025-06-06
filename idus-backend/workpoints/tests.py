@@ -177,3 +177,11 @@ def test_permission_admin_access_any_report(db, client, admin_user, other_user):
         f"/api/workpoints/report/{other_user.id}/?start_date=2024-11-29&end_date=2024-11-29"
     )
     assert response.status_code == 200
+
+
+def test_workpoint_str_representation(db, user, workpoint_model):
+    timestamp = timezone.make_aware(datetime(2024, 11, 29, 8, 0, 0))
+    point = workpoint_model.objects.create(user=user, timestamp=timestamp, type="in")
+
+    expected = f"{user.cpf} - in em {point.timestamp} ({point.weekday})"
+    assert str(point) == expected
