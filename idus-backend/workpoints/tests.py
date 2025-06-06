@@ -106,6 +106,24 @@ def test_register_point_manual_invalid(db, user, client):
     assert "Timestamp inválido" in response.json()["detail"]
 
 
+def test_register_point_manual_timezone_aware(db, user, client):
+    client.force_authenticate(user)
+    aware_timestamp = "2024-11-29T09:00:00-03:00"
+
+    response = client.post(
+        f"/api/workpoints/{user.id}/register-point-manual/",
+        {"timestamp": aware_timestamp},
+        format="json",
+    )
+
+    assert response.status_code == 201
+    assert response.json()["timestamp"] == aware_timestamp
+    point = WorkPoint.objects.get(user=user)
+    tz = timezone.get_current_timezone()
+    stored = point.timestamp.astimezone(tz).isoformat()
+    assert stored == aware_timestamp
+
+
 # Testes de Relatórios
 def test_report_no_points(db, client, user):
     client.force_authenticate(user)
@@ -188,6 +206,21 @@ def test_workpoint_str_representation(db, user, workpoint_model):
     assert str(point) == expected
 
 
+def test_workpoint_naive_timestamp_saved_as_aware(db, user, workpoint_model):
+    naive_dt = datetime(2024, 11, 30, 9, 0, 0)
+    point = workpoint_model.objects.create(user=user, timestamp=naive_dt, type="in")
+
+    assert not timezone.is_naive(point.timestamp)
+    assert point.timestamp.hour == 9
+
+
+def test_workpoint_preserve_aware_timestamp(db, user, workpoint_model):
+    aware_dt = timezone.make_aware(datetime(2024, 11, 30, 10, 0, 0))
+    point = workpoint_model.objects.create(user=user, timestamp=aware_dt, type="in")
+
+    assert point.timestamp == aware_dt
+
+
 def test_calculate_worked_hours_5x1():
     start = datetime(2024, 4, 22).date()
     end = datetime(2024, 4, 28).date()
@@ -239,3 +272,37 @@ def test_calculate_worked_hours_12x36():
 
     total = calculate_worked_hours(points, start, end, "12x36")
     assert total == 24.0
+
+
+def test_calculate_worked_hours_4h():
+    start = datetime(2024, 4, 22).date()
+    end = datetime(2024, 4, 23).date()
+    points = [
+        {
+            "date_point": "22/04/2024",
+            "timestamp": [
+                {"time": "08:00:00", "type": "in"},
+                {"time": "12:00:00", "type": "out"},
+            ],
+        }
+    ]
+
+    total = calculate_worked_hours(points, start, end, "4h")
+    assert total == 8.0
+
+
+def test_calculate_worked_hours_6h():
+    start = datetime(2024, 4, 22).date()
+    end = datetime(2024, 4, 23).date()
+    points = [
+        {
+            "date_point": "22/04/2024",
+            "timestamp": [
+                {"time": "08:00:00", "type": "in"},
+                {"time": "14:00:00", "type": "out"},
+            ],
+        }
+    ]
+
+    total = calculate_worked_hours(points, start, end, "6h")
+    assert total == 12.0
