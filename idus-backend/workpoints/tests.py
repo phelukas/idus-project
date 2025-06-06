@@ -5,6 +5,7 @@ from django.utils import timezone
 from datetime import datetime, timedelta
 from workpoints.models import WorkPoint
 from workpoints.views import WorkPointViewSet
+from workpoints.utils import calculate_worked_hours
 
 User = get_user_model()
 
@@ -185,3 +186,56 @@ def test_workpoint_str_representation(db, user, workpoint_model):
 
     expected = f"{user.cpf} - in em {point.timestamp} ({point.weekday})"
     assert str(point) == expected
+
+
+def test_calculate_worked_hours_5x1():
+    start = datetime(2024, 4, 22).date()
+    end = datetime(2024, 4, 28).date()
+    points = [
+        {
+            "date_point": "22/04/2024",
+            "timestamp": [
+                {"time": "08:00:00", "type": "in"},
+                {"time": "12:00:00", "type": "out"},
+                {"time": "13:00:00", "type": "in"},
+                {"time": "17:00:00", "type": "out"},
+            ],
+        }
+    ]
+
+    total = calculate_worked_hours(points, start, end, "5x1")
+    assert total == 44.0
+
+
+def test_calculate_worked_hours_6x1():
+    start = datetime(2024, 4, 22).date()
+    end = datetime(2024, 4, 28).date()
+    points = [
+        {
+            "date_point": "22/04/2024",
+            "timestamp": [
+                {"time": "08:00:00", "type": "in"},
+                {"time": "15:20:00", "type": "out"},
+            ],
+        }
+    ]
+
+    total = calculate_worked_hours(points, start, end, "6x1")
+    assert total == 44.0
+
+
+def test_calculate_worked_hours_12x36():
+    start = datetime(2024, 4, 22).date()
+    end = datetime(2024, 4, 25).date()
+    points = [
+        {
+            "date_point": "22/04/2024",
+            "timestamp": [
+                {"time": "08:00:00", "type": "in"},
+                {"time": "20:00:00", "type": "out"},
+            ],
+        }
+    ]
+
+    total = calculate_worked_hours(points, start, end, "12x36")
+    assert total == 24.0
