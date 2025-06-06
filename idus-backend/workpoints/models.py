@@ -4,7 +4,11 @@ from django.conf import settings
 from django.utils.timezone import localtime, make_aware, is_naive
 import locale
 
-locale.setlocale(locale.LC_TIME, "pt_BR.UTF-8")
+try:
+    locale.setlocale(locale.LC_TIME, "pt_BR.UTF-8")
+except locale.Error:
+    # Ignore if the locale is not available (e.g. in CI environments)
+    pass
 
 
 class WorkPoint(models.Model):
