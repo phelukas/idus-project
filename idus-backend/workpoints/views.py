@@ -239,7 +239,7 @@ class WorkPointReportView(APIView, UserPermissionMixin, ReportMixin):
                 "total_worked": str(total_worked),
                 "remaining_hours": str(remaining),
                 "extra_hours": str(extra),
-                "is_complete": remaining == timedelta(),
+                "is_complete": remaining == 0,
             }
         )
 
@@ -293,6 +293,9 @@ class DailySummaryView(APIView, UserPermissionMixin, ReportMixin):
         total_worked = calculate_worked_hours(
             grouped_points, start_date=today, end_date=today, scale=scale
         )
+        remaining = calculate_remaining_hours(
+            total_worked, user.work_schedule, grouped_points
+        )
         return Response(
             {
                 "date": today.strftime("%d/%m/%Y"),
@@ -305,6 +308,6 @@ class DailySummaryView(APIView, UserPermissionMixin, ReportMixin):
                     for p in points
                 ],
                 "total_worked": str(total_worked),
-                "is_complete": "",
+                "is_complete": remaining == 0,
             }
         )
