@@ -82,9 +82,10 @@ Antes de começar, você precisará ter as seguintes ferramentas instaladas:
    http://127.0.0.1:8000
    ```
 
-3. **Criação de Superusuário Padrão:**
+3. **Criação de Superusuário Padrão (Opcional):**
 
-   - Ao executar `python manage.py migrate`, um superusuário com CPF `39416362000` é criado automaticamente, com o seguinte login:
+   - Caso deseje criar automaticamente um usuário administrador de teste, defina a variável `CREATE_DEFAULT_ADMIN=true` no arquivo `.env` e execute `python manage.py migrate`.
+     O usuário criado terá as seguintes credenciais:
      ```plaintext
      CPF: 39416362000
      Senha: admin123
