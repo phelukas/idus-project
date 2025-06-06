@@ -4,8 +4,7 @@ import { UserInfo } from './UserInfo';
 describe('UserInfo', () => {
   it('exibe informacoes do usuario', () => {
     const user = {
-      name: 'Joao',
-      last_name: 'Silva',
+      name: 'Joao Silva',
       cpf: '123.456.789-00',
       email: 'joao@example.com',
       birthDate: '1990-01-01',
