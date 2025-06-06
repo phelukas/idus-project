@@ -39,3 +39,6 @@ class WorkPoint(models.Model):
         return (
             f"{self.user.cpf} - {self.type} em {self.timestamp} ({self.weekday})"
         )
+
+    class Meta:
+        indexes = [models.Index(fields=["user", "timestamp"])]
