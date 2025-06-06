@@ -30,15 +30,24 @@ def calculate_worked_hours(points, start_date, end_date, scale):
         daily_hours = timedelta()
         point = points_by_date.get(current_date, None)
         weekday = current_date.weekday()
+        day_index = (current_date - start_date).days
 
         if scale == "5x1":
-            expected_hours = 8 if weekday < 6 else 8
+            if weekday == 6:
+                expected_hours = 0
+            elif weekday == 5:
+                expected_hours = 4
+            else:
+                expected_hours = 8
         elif scale == "6x1":
-            expected_hours = 7 + 20 / 60
+            expected_hours = 0 if weekday == 6 else 7 + 20 / 60
         elif scale == "12x36":
-            expected_hours = 12 if weekday % 2 == 0 else 0
+            expected_hours = 12 if day_index % 2 == 0 else 0
         elif scale == "4h":
-            expected_hours = 4
+            if weekday == 5:
+                expected_hours = 0
+            else:
+                expected_hours = 4
         elif scale == "6h":
             expected_hours = 6
         else:
@@ -46,14 +55,7 @@ def calculate_worked_hours(points, start_date, end_date, scale):
 
         if point:
             timestamps = point.get("timestamp", [])
-            if not timestamps:
-                if scale == "5x1" and weekday == 6:
-                    daily_hours += timedelta(hours=8)
-                elif scale == "6x1" and weekday == 6:
-                    daily_hours += timedelta(hours=7, minutes=20)
-                elif scale == "4h" and weekday == 6:
-                    daily_hours += timedelta(hours=4)
-            else:
+            if timestamps:
                 timestamps.sort(key=lambda t: datetime.strptime(t["time"], "%H:%M:%S"))
                 i = 0
                 while i < len(timestamps) - 1:
@@ -64,15 +66,10 @@ def calculate_worked_hours(points, start_date, end_date, scale):
                         end_time = datetime.strptime(end["time"], "%H:%M:%S")
                         daily_hours += end_time - start_time
                     i += 2
-        else:
-            if scale == "5x1" and weekday == 6:
-                daily_hours += timedelta(hours=8)
-            elif scale == "6x1" and weekday == 6:
-                daily_hours += timedelta(hours=7, minutes=20)
-            elif scale == "4h" and weekday == 6:
-                daily_hours += timedelta(hours=4)
-            elif scale in ["5x1", "6x1"] and weekday != 6:
+            else:
                 daily_hours += timedelta(hours=expected_hours)
+        else:
+            daily_hours += timedelta(hours=expected_hours)
 
         total_hours += daily_hours
         current_date += timedelta(days=1)
