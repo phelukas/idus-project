@@ -55,19 +55,10 @@ Antes de começar, você precisará ter as seguintes ferramentas instaladas:
 
 ## Configuração
 
-1. Crie um arquivo `.env` na raiz do projeto e adicione as seguintes variáveis:
+1. Copie o arquivo `.env.example` para `.env` e ajuste os valores das variáveis conforme a sua necessidade:
 
-   ```env
-   SECRET_KEY=seu-segredo
-   DEBUG=True
-   DATABASE_NAME=nome-do-banco
-   DATABASE_USER=usuario
-   DATABASE_PASSWORD=senha
-   DATABASE_HOST=localhost
-   DATABASE_PORT=5432
-   ALLOWED_HOSTS=localhost,127.0.0.1
-   CORS_ALLOWED_ORIGINS=http://localhost:3000
-   ACCESS_TOKEN_LIFETIME=60
+   ```bash
+   cp .env.example .env
    ```
 
 2. Altere o banco de dados, se necessário, para produção ou desenvolvimento.
