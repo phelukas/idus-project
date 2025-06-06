@@ -1,5 +1,5 @@
 import { BASE_URL } from "./config";
-import { getAccessToken, refreshAccessToken } from "./auth";
+import { refreshAccessToken } from "./auth";
 
 /**
  * Requisição genérica para a API.
@@ -9,28 +9,25 @@ import { getAccessToken, refreshAccessToken } from "./auth";
  * @returns {Promise<Object>} Resposta da API em JSON
  */
 async function apiRequest(endpoint, method, body = null) {
-  let token = getAccessToken();
-
   const headers = {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
   };
 
   try {
     let response = await fetch(`${BASE_URL}${endpoint}`, {
       method,
       headers,
+      credentials: "include",
       body: body ? JSON.stringify(body) : null,
     });
 
     if (response.status === 401) {
       console.warn("Token expirado. Tentando renovar...");
-      token = await refreshAccessToken();
-      headers.Authorization = `Bearer ${token}`;
-
+      await refreshAccessToken();
       response = await fetch(`${BASE_URL}${endpoint}`, {
         method,
         headers,
+        credentials: "include",
         body: body ? JSON.stringify(body) : null,
       });
     }
@@ -92,11 +89,7 @@ export const getWorkPointReport = (userId, { startDate, endDate }) =>
   );
 
 export const downloadWorkPointPDF = async (userId, { startDate, endDate }) => {
-  const token = getAccessToken();
-
-  const headers = {
-    Authorization: `Bearer ${token}`,
-  };
+  const headers = {};
 
   try {
     const response = await fetch(
@@ -104,6 +97,7 @@ export const downloadWorkPointPDF = async (userId, { startDate, endDate }) => {
       {
         method: "GET",
         headers,
+        credentials: "include",
       }
     );
 
