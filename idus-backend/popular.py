@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, time
 
 # Debug para verificar o caminho do módulo de configurações
 try:
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'idus_backend.settings')
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "idus_backend.settings")
     django.setup()
 except Exception as e:
     print(f"Erro ao configurar Django: {e}")
@@ -41,25 +41,29 @@ first_name = "estagiario"
 last_name = "estagiario"
 password = "password123"
 
-user, created = User.objects.get_or_create(
-    cpf=cpf,
-    defaults={
-        "email": email,
-        "first_name": first_name,
-        "last_name": last_name,
-        "password": password,
-    },
-)
+try:
+    user = User.objects.get(cpf=cpf)
+    created = False
+except User.DoesNotExist:
+    user = User.objects.create_user(
+        cpf=cpf,
+        email=email,
+        first_name=first_name,
+        last_name=last_name,
+        password=password,
+    )
+    created = True
 
 if created:
     print(f"Usuário {first_name} {last_name} criado com sucesso.")
 else:
     print(f"Usuário {first_name} {last_name} já existe.")
 
+
 # Função para criar batidas de ponto com rollback em caso de falha
 def create_work_points(user, start_date, end_date, weekdays_hours, saturdays_hours):
     current_date = start_date
-    
+
     try:
         with transaction.atomic():
             while current_date <= end_date:
@@ -72,9 +76,11 @@ def create_work_points(user, start_date, end_date, weekdays_hours, saturdays_hou
                     continue
 
                 # Verificar a última batida do dia anterior
-                last_point = WorkPoint.objects.filter(
-                    user=user, timestamp__date=current_date
-                ).order_by("-timestamp").first()
+                last_point = (
+                    WorkPoint.objects.filter(user=user, timestamp__date=current_date)
+                    .order_by("-timestamp")
+                    .first()
+                )
                 is_in_next = not last_point or last_point.type == "out"
 
                 for hour in hours:
@@ -92,6 +98,7 @@ def create_work_points(user, start_date, end_date, weekdays_hours, saturdays_hou
     except Exception as e:
         print(f"Erro ao criar batidas de ponto: {e}")
         raise
+
 
 # Criar as batidas de ponto
 create_work_points(user, start_date, end_date, weekdays_hours, saturdays_hours)
