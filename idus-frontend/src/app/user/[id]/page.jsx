@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
 import { UserInfo } from "../../components/UserInfo";
 import { LocationMap } from "../../components/LocationMap";
 import { PointsList } from "../../components/PointsList";
@@ -16,9 +17,8 @@ import {
   updateUser,
 } from "../../api/user";
 
-export default function UserDetails({ params: paramsPromise }) {
-  const params = use(paramsPromise);
-  const { id } = params;
+export default function UserDetails() {
+  const { id } = useParams();
 
   const [activeTab, setActiveTab] = useState("map");
   const [latitude, setLatitude] = useState(null);
