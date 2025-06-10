@@ -314,6 +314,12 @@ A documentação completa da API, gerada automaticamente pelo **DRF Spectacular*
 | POST   | `/workpoints/<id>/register-point/` | Registrar ponto de trabalho             |
 | GET    | `/workpoints/report/<id>/`         | Obter relatório de pontos de trabalho   |
 
+## Variáveis de Ambiente
+
+Defina uma chave secreta exclusiva antes de iniciar o projeto. Copie o arquivo
+`.env.example` para `.env` e edite o valor de `SECRET_KEY` com a sua própria
+chave.
+
 ## Testes
 
 1. Para rodar os testes automatizados:
