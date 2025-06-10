@@ -149,6 +149,13 @@ class WorkPointViewSet(viewsets.ModelViewSet, UserPermissionMixin, PointCreation
     permission_classes = [IsAuthenticated]
     lookup_field = "id"
 
+    def get_queryset(self):
+        """Restrict queryset to the requesting user unless staff."""
+        user = self.request.user
+        if user.is_staff:
+            return WorkPoint.objects.all()
+        return WorkPoint.objects.filter(user=user)
+
 
 class UserWorkPointView(viewsets.ViewSet, UserPermissionMixin, PointCreationMixin):
     """Endpoints para registro de pontos por usuário."""

@@ -32,6 +32,12 @@ urlpatterns = [
         UserWorkPointView.as_view({"post": "register_point_manual"}),
         name="register-point-manual",
     ),
+    # Rota mantida para compatibilidade retroativa
+    path(
+        "workpoints/<uuid:user_id>/register-point-manual/",
+        UserWorkPointView.as_view({"post": "register_point_manual"}),
+        name="register-point-manual-legacy",
+    ),
     path(
         "workpoints/report/<uuid:id>/pdf/",
         WorkPointPDFReportView.as_view(),
