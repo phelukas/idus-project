@@ -306,3 +306,26 @@ def test_calculate_worked_hours_6h():
 
     total = calculate_worked_hours(points, start, end, "6h")
     assert total == 12.0
+
+
+# Permissão de acesso via ViewSet
+def test_viewset_user_cannot_list_other_users_points(db, client, user, other_user, workpoint_model):
+    workpoint_model.objects.create(user=user, timestamp=timezone.now(), type="in")
+    workpoint_model.objects.create(user=other_user, timestamp=timezone.now(), type="in")
+
+    client.force_authenticate(user)
+    response = client.get("/api/workpoints/")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) == 1
+    assert data[0]["user"] == str(user.id)
+
+
+def test_viewset_user_cannot_retrieve_other_users_point(db, client, user, other_user, workpoint_model):
+    other_point = workpoint_model.objects.create(user=other_user, timestamp=timezone.now(), type="in")
+
+    client.force_authenticate(user)
+    response = client.get(f"/api/workpoints/{other_point.id}/")
+
+    assert response.status_code == 404
