@@ -13,21 +13,28 @@ async function apiRequest(endpoint, method, body = null) {
     "Content-Type": "application/json",
   };
 
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
   try {
     let response = await fetch(`${BASE_URL}${endpoint}`, {
       method,
       headers,
-      credentials: "include",
       body: body ? JSON.stringify(body) : null,
     });
 
     if (response.status === 401) {
       console.warn("Token expirado. Tentando renovar...");
-      await refreshAccessToken();
+      const data = await refreshAccessToken();
+      if (data.access) {
+        headers["Authorization"] = `Bearer ${data.access}`;
+      }
       response = await fetch(`${BASE_URL}${endpoint}`, {
         method,
         headers,
-        credentials: "include",
         body: body ? JSON.stringify(body) : null,
       });
     }
@@ -90,6 +97,11 @@ export const getWorkPointReport = (userId, { startDate, endDate }) =>
 
 export const downloadWorkPointPDF = async (userId, { startDate, endDate }) => {
   const headers = {};
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
 
   try {
     const response = await fetch(
@@ -97,7 +109,6 @@ export const downloadWorkPointPDF = async (userId, { startDate, endDate }) => {
       {
         method: "GET",
         headers,
-        credentials: "include",
       }
     );
 
