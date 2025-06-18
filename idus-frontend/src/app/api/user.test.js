@@ -4,6 +4,7 @@ describe('api/user', () => {
   beforeEach(() => {
     fetch.mockClear();
     process.env.NEXT_PUBLIC_API_URL = 'http://localhost';
+    localStorage.setItem('access_token', 'token');
     jest.resetModules();
   });
 
@@ -17,8 +18,10 @@ describe('api/user', () => {
     const data = await listUsers();
     expect(fetch).toHaveBeenCalledWith('http://localhost/users/list/', {
       method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer token',
+      },
       body: null,
     });
     expect(data).toEqual({ result: 'ok' });
@@ -34,8 +37,10 @@ describe('api/user', () => {
     const data = await updateUser(5, { name: 'test' });
     expect(fetch).toHaveBeenCalledWith('http://localhost/users/update/5/', {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer token',
+      },
       body: JSON.stringify({ name: 'test' }),
     });
     expect(data).toEqual({ done: true });

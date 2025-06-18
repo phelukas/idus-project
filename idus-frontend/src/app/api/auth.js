@@ -1,30 +1,46 @@
 import { BASE_URL } from "./config";
 
-/**
- * Since the backend now manages authentication tokens using HttpOnly cookies,
- * the frontend no longer stores or directly accesses these values. All
- * requests that require authentication should include `credentials: "include"`
- * so the cookies are sent along.
- */
+export function storeTokens({ access, refresh }) {
+  if (typeof window !== "undefined") {
+    localStorage.setItem("access_token", access);
+    if (refresh) {
+      localStorage.setItem("refresh_token", refresh);
+    }
+  }
+}
+
+export function clearTokens() {
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+  }
+}
 
 export async function refreshAccessToken() {
+  const refresh =
+    typeof window !== "undefined" ? localStorage.getItem("refresh_token") : null;
+
   const response = await fetch(`${BASE_URL}/auth/jwt/refresh/`, {
     method: "POST",
-    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ refresh }),
   });
 
   if (!response.ok) {
     throw new Error("Falha ao renovar o token.");
   }
 
-  return await response.json();
+  const data = await response.json();
+  if (data.access) {
+    storeTokens({ access: data.access, refresh });
+  }
+  return data;
 }
 
 export async function login(credentials) {
   const response = await fetch(`${BASE_URL}/auth/jwt/create/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    credentials: "include",
     body: JSON.stringify(credentials),
   });
 
@@ -33,16 +49,19 @@ export async function login(credentials) {
     throw new Error(errorData.detail || "Erro no login.");
   }
 
-  return await response.json();
+  const data = await response.json();
+  storeTokens(data);
+  return data;
 }
 
 export async function logout() {
   try {
     await fetch(`${BASE_URL}/auth/logout/`, {
       method: "POST",
-      credentials: "include",
     });
   } catch (error) {
     console.error("Erro no logout:", error.message);
+  } finally {
+    clearTokens();
   }
 }
