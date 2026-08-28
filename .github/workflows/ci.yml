@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "master" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "master" ]
 
 jobs:
   test:
@@ -64,8 +64,10 @@ jobs:
       - name: Lint backend
         run: |
           pip install black
+          # Informational until the existing codebase is formatted in a dedicated PR.
           black --check idus-backend || true
 
       - name: Lint frontend
         working-directory: idus-frontend
+        # Informational until the existing frontend lint debt is addressed.
         run: npm run lint || true

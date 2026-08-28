@@ -1,96 +1,112 @@
-## **Descrição**
+# IDUS — gestão de jornada de trabalho
 
-Este projeto consiste em um sistema com backend baseado em Django Rest Framework e frontend construído com Next.js. Ele utiliza Docker para simplificar a configuração e execução.
+Aplicação full stack para cadastro de colaboradores, autenticação por CPF, registro de pontos com localização e geração de relatórios de jornada.
 
-## Índice
+O projeto demonstra a integração entre uma API REST em Django e uma interface em Next.js, com persistência em PostgreSQL e ambiente local reproduzível com Docker Compose.
 
-- [Documentação da API](idus-backend/README.md)
+## Principais funcionalidades
 
-## **Requisitos**
+- autenticação com JWT e controle de acesso;
+- cadastro e manutenção de colaboradores;
+- registro manual de pontos com data, horário e geolocalização;
+- cálculo e visualização do resumo diário da jornada;
+- consulta e impressão de relatórios;
+- documentação interativa da API com OpenAPI/Swagger.
 
-- **Docker** e **Docker Compose** instalados na máquina.
+## Stack
 
-## **Como Rodar o Projeto** 😄
+| Camada | Tecnologias |
+| --- | --- |
+| Backend | Python 3.12, Django, Django REST Framework, Simple JWT |
+| Frontend | Next.js 15, React 19, Tailwind CSS |
+| Dados | PostgreSQL 15 |
+| Qualidade | Pytest, Jest, React Testing Library, Black, GitHub Actions |
+| Infraestrutura | Docker e Docker Compose |
 
-1. **Clone o Repositório**
-   Venha de cabeça e copie o projeto para sua máquina:
+## Arquitetura
 
-   ```bash
-   git clone https://github.com/phelukas/idus-project.git
-   cd idus-project
-   ```
-
-2. **Suba os Serviços com Docker Compose**
-   Rode o comando abaixo e faça um café enquanto tudo é configurado 🚀:
-
-   ```bash
-   docker-compose up --build
-   ```
-
-   Isso irá:
-
-   - Construir as imagens Docker.
-   - Iniciar os containers para o backend, frontend e banco de dados.
-
-3. **Acesse o Sistema**
-   - **Frontend**: [http://localhost:3000](http://localhost:3000)
-   - **Backend API**: [http://localhost:8000/api/](http://localhost:8000/api/)
-
-4. **Personalize suas Configurações**
-   Primeiro, copie o arquivo `.env.example` para `.env` e depois ajuste os valores conforme desejar 😉.
-
-## **Estrutura de Serviços**
-
-- **Backend**: Django Rest Framework rodando em `http://localhost:8000/api/`
-- **Frontend**: Next.js rodando em `http://localhost:3000/`
-- **Banco de Dados**: PostgreSQL gerenciado em um container Docker.
-
-## **Como Personalizar**
-
-Se precisar ajustar alguma configuração, copie primeiro o arquivo `.env.example` para `.env` e edite-o com os valores desejados. Exemplo:
-
-```env
-SECRET_KEY=django-insecure-f55x+z^!6gcz52*w7%o7n5vt58ghciv#9@2epuk=)ug*##rcac
-DEBUG=True
-DATABASE_NAME=idusdb
-DATABASE_USER=idususer
-DATABASE_PASSWORD=iduspass
-DATABASE_HOST=db
-DATABASE_PORT=5432
-CORS_ALLOWED_ORIGINS=http://localhost,http://127.0.0.1:3000
+```text
+Browser (Next.js :3000)
+          |
+          | HTTP/JSON + Bearer token
+          v
+Django REST API (:8000) ----> PostgreSQL (:5432)
 ```
 
-## **Telas**
+O backend está dividido nos domínios `users` e `workpoints`. O frontend centraliza o acesso à API e mantém as páginas e componentes de cada fluxo. Em testes, o backend usa SQLite em memória para oferecer execução rápida e isolada; a aplicação usa PostgreSQL.
 
-**Login**
+## Executar localmente
 
-![Diagrama de Entidade/Relacionamento](imagens-docs/tela-de-login.png)
+Pré-requisito: Docker Desktop com Docker Compose.
 
-**Dashboard**
+```bash
+git clone https://github.com/phelukas/idus-project.git
+cd idus-project
+cp .env.example .env
+```
 
-![Diagrama de Entidade/Relacionamento](imagens-docs/tela-de-dashboard.png)
+Gere uma chave exclusiva e preencha `SECRET_KEY` no arquivo `.env`. Uma opção é:
 
-**Criação de usuario**
+```bash
+python -c "import secrets; print(secrets.token_urlsafe(50))"
+```
 
-![Diagrama de Entidade/Relacionamento](imagens-docs/tela-de-criacao-de-usuario.png)
+Depois, inicie os serviços:
 
-**Informaçõe sobre usuario**
+```bash
+docker compose up --build
+```
 
-![Diagrama de Entidade/Relacionamento](imagens-docs/tela-de-info-usuario.png)
+Quando os contêineres estiverem prontos:
 
-**Edição de usuario**
+- aplicação web: http://localhost:3000
+- API: http://localhost:8000/api/
+- documentação OpenAPI: http://localhost:8000/api/schema/swagger-ui/
 
-![Diagrama de Entidade/Relacionamento](imagens-docs/tela-de-edicao-de-usuario.png)
+Para encerrar, execute `docker compose down`.
 
-**Tela de ponto manual**
+## Testes e qualidade
 
-![Diagrama de Entidade/Relacionamento](imagens-docs/tela-de-ponto-manual.png)
+O GitHub Actions executa testes e lint do backend e do frontend em cada pull request para `master`.
 
-**Relatorio de pontos**
+Backend:
 
-![Diagrama de Entidade/Relacionamento](imagens-docs/tela-de-relatorio-de-ponto.png)
+```bash
+cd idus-backend
+python -m pip install -r requirements.txt
+pytest
+black --check .
+```
+
+Frontend:
+
+```bash
+cd idus-frontend
+npm ci
+npm test -- --runInBand
+npm run lint
+```
+
+## Decisões e limitações atuais
+
+- JWT foi escolhido para manter a API independente da sessão do navegador.
+- O CPF é usado como identificador de login por refletir o domínio original do projeto.
+- O ambiente Docker usa o servidor de desenvolvimento do Django; uma implantação produtiva deve usar um servidor WSGI/ASGI, HTTPS e cookies seguros.
+- As credenciais padrão do banco existem apenas para desenvolvimento local e devem ser substituídas fora desse ambiente.
+- A cobertura de testes ainda é parcial e deve crescer principalmente nos fluxos de autenticação, permissões e cálculo de jornada.
+
+## Telas
+
+| Login | Dashboard |
+| --- | --- |
+| ![Tela de login](imagens-docs/tela-de-login.png) | ![Dashboard](imagens-docs/tela-de-dashboard.png) |
+
+| Cadastro de colaborador | Relatório de pontos |
+| --- | --- |
+| ![Cadastro de colaborador](imagens-docs/tela-de-criacao-de-usuario.png) | ![Relatório de pontos](imagens-docs/tela-de-relatorio-de-ponto.png) |
+
+Mais detalhes sobre endpoints, modelos e autenticação estão na [documentação do backend](idus-backend/README.md).
 
 ## Licença
 
-Este projeto está licenciado sob os termos da [Licença MIT](LICENSE).
-
+Distribuído sob a [licença MIT](LICENSE).
