@@ -10,7 +10,11 @@ SECRET_KEY = config("SECRET_KEY")
 
 DEBUG = config("DEBUG", default=False, cast=bool)
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in config("ALLOWED_HOSTS", default="127.0.0.1,localhost").split(",")
+    if host.strip()
+]
 
 
 SECURE_SSL_REDIRECT = False
@@ -142,6 +146,10 @@ SWAGGER_SETTINGS = {
     }
 }
 
-CORS_ALLOWED_ORIGINS = config(
-    "CORS_ALLOWED_ORIGINS", default="http://localhost:3000"
-).split(",")
+CORS_ALLOWED_ORIGINS = [
+    origin.strip()
+    for origin in config(
+        "CORS_ALLOWED_ORIGINS", default="http://localhost:3000"
+    ).split(",")
+    if origin.strip()
+]
