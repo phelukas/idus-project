@@ -3,9 +3,9 @@ FROM node:20-alpine
 # Define o diretório de trabalho
 WORKDIR /app
 
-# Copiar arquivos necessários e instalar dependências
+# Copiar arquivos necessários e instalar dependências de forma reproduzível
 COPY package.json package-lock.json /app/
-RUN npm install --no-cache --legacy-peer-deps \
+RUN npm ci --legacy-peer-deps \
     && rm -rf /tmp/* /var/cache/apk/* /root/.npm /root/.cache
 
 # Copiar o restante do código da aplicação

@@ -3,7 +3,6 @@ set -e
 
 host="$1"
 shift
-cmd="$@"
 
 echo "Aguardando o banco de dados no host $host..."
 
@@ -16,4 +15,4 @@ done
 python manage.py migrate
 
 >&2 echo "Iniciando o servidor"
-exec $cmd
+exec "$@"
