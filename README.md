@@ -1,5 +1,7 @@
 # IDUS — gestão de jornada de trabalho
 
+[![CI](https://github.com/phelukas/idus-project/actions/workflows/ci.yml/badge.svg)](https://github.com/phelukas/idus-project/actions/workflows/ci.yml)
+
 Aplicação full stack para cadastro de colaboradores, autenticação por CPF, registro de pontos com localização e geração de relatórios de jornada.
 
 O projeto demonstra a integração entre uma API REST em Django e uma interface em Next.js, com persistência em PostgreSQL e ambiente local reproduzível com Docker Compose.
@@ -61,7 +63,7 @@ Quando os contêineres estiverem prontos:
 
 - aplicação web: http://localhost:3000
 - API: http://localhost:8000/api/
-- documentação OpenAPI: http://localhost:8000/api/schema/swagger-ui/
+- documentação OpenAPI: http://localhost:8000/api/docs/
 
 Para encerrar, execute `docker compose down`.
 

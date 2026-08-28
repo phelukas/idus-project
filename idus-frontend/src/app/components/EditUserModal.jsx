@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import styles from "./EditUserModal.module.css";
 import ErrorMessage from "./ErrorMessage";
 
@@ -21,7 +21,7 @@ export function EditUserModal({
   const [formErrors, setFormErrors] = useState(null);
   const modalRef = useRef(null);
 
-  const resetForm = () => {
+  const resetForm = useCallback(() => {
     setFormData({
       first_name: user?.first_name || "",
       last_name: user?.last_name || "",
@@ -32,7 +32,7 @@ export function EditUserModal({
       password: "",
     });
     setFormErrors(null);
-  };
+  }, [user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -62,12 +62,12 @@ export function EditUserModal({
     }
   };
 
-  const handleClickOutside = (event) => {
+  const handleClickOutside = useCallback((event) => {
     if (modalRef.current && !modalRef.current.contains(event.target)) {
       resetForm();
       setShowModal(false);
     }
-  };
+  }, [resetForm, setShowModal]);
 
   useEffect(() => {
     if (showModal) {
@@ -76,7 +76,7 @@ export function EditUserModal({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [showModal]);
+  }, [handleClickOutside, showModal]);
 
   const handleClose = () => {
     resetForm();

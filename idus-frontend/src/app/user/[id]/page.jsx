@@ -170,7 +170,7 @@ export default function UserDetails() {
     } else {
       console.warn("Geolocalização não é suportada pelo navegador.");
     }
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     const interval = setInterval(() => {
